@@ -1,7 +1,9 @@
 class Walker
 {
+  final float CHASE_THRESHOLD = 0.6;
+  final float SHAKE_THRESHOLD = 0.95;
   PVector pos;
-  float tVer, tHor, tShape;
+  float tVer, tHor, tShape, tShake, tChase;
   float pissedOff;
   
   public Walker()
@@ -12,6 +14,8 @@ class Walker
     tVer = 0;
     tHor = 10000;
     tShape = 20000;
+    tShake = 30000;
+    tChase = 40000;
   }
   
   public void tick()
@@ -21,51 +25,74 @@ class Walker
     if (distance<1)
           distance=1;
           
-    if (distance < pissedOff+50)
+    if (distance < 50+(pissedOff*100))
     {
       // If we are really pissed off, chase the mouse
-      if (pissedOff>130)
+      if (pissedOff > SHAKE_THRESHOLD ||
+            (pissedOff > CHASE_THRESHOLD &&
+            noise(tChase) > 0.5)) 
+      {
             evade.mult(-1);
-            
-      evade.normalize();
-      pos.add(PVector.mult(evade, 50/distance));
+            evade.normalize();
+            pos.add(PVector.mult(evade, distance/5));
+      }
+      else 
+      {     
+            evade.normalize();
+            pos.add(PVector.mult(evade, 50/distance));
+      }
       
-      if (pissedOff < 200)
-            pissedOff += 1;
+      if (pissedOff < 1)
+            pissedOff += 0.002;
     }
     else {
       if (pissedOff > 0)
-            pissedOff -= 1;
+            pissedOff -= 0.01;
     }
-
-    /* add random noise to movement based on 
-     * "danger" from the sides
-     */
-    PVector danger = new PVector(noise(tVer)-0.48, 
-                                  noise(tHor)-0.48); 
-    danger.mult(2);
     
-    pos.add(danger);    
+    /* if we are in chase mode make 
+     * side to side movement
+     */
+    
+    if (pissedOff > CHASE_THRESHOLD) {
+      tShake += 1;
+      pos.x += sin(tShake)*(((pissedOff-CHASE_THRESHOLD)/0.35)*10);
+    }
+    
+
+    /* add random noise (neuroza) to movement */
+    PVector neuroza = new PVector(noise(tVer)-0.48, 
+                                  noise(tHor)-0.48); 
+    neuroza.mult(3+pissedOff*5);
+    
+    pos.add(neuroza);    
         
     tVer += 0.2;
     tHor += 0.2;
+    tChase += 0.1;
     
-    //pissedOff = noise(tAnger)*150;
-    //tAnger += 0.005;
+    /* keep the circle inside the screen */
+    if (pos.x < 10)
+          pos.x = 10;
+    else if (pos.x > width-10)
+          pos.x = width-10;
+    
+    if (pos.y < 10)
+          pos.y = 10;
+    else if (pos.y > height-10)
+          pos.y = height-10;
   }
   
   public void draw()
   {
-    fill(100 + pissedOff, 100, 100);
+    fill(80 + (pissedOff*175), 80, 80, 255);
     
-    for (float i=0; i<PI*2; i+=0.1)
+    for (float i=0; i<PI*2; i+=0.05)
     {
-      ellipse(pos.x + sin(i)*(20+noise(tShape)*5), 
-              pos.y + cos(i)*(20+noise(tShape)*5), 3, 3);
+      ellipse(pos.x + sin(i)*(20+noise(tShape)*(3+(pissedOff*8))), 
+              pos.y + cos(i)*(20+noise(tShape)*(3+(pissedOff*8))), 2, 2);
+              
       tShape += 0.2;
-//      point(pos.x + sin(i)*20, pos.y + cos(i)*20);
     }
-    
-    //ellipse(pos.x, pos.y, 20, 20);
   }
 }
