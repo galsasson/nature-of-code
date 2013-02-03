@@ -63,7 +63,7 @@ class Walker
     /* add random noise (neuroza) to movement */
     PVector neuroza = new PVector(noise(tVer)-0.48, 
                                   noise(tHor)-0.48); 
-    neuroza.mult(3+pissedOff*5);
+    neuroza.mult(5+pissedOff*5);
     
     pos.add(neuroza);    
         
@@ -72,15 +72,15 @@ class Walker
     tChase += 0.1;
     
     /* keep the circle inside the screen */
-    if (pos.x < 10)
-          pos.x = 10;
-    else if (pos.x > width-10)
-          pos.x = width-10;
+    if (pos.x < 20)
+          pos.x = 20;
+    else if (pos.x > width-20)
+          pos.x = width-20;
     
-    if (pos.y < 10)
-          pos.y = 10;
-    else if (pos.y > height-10)
-          pos.y = height-10;
+    if (pos.y < 20)
+          pos.y = 20;
+    else if (pos.y > height-20)
+          pos.y = height-20;
   }
   
   public void draw()
@@ -89,8 +89,8 @@ class Walker
     
     for (float i=0; i<PI*2; i+=0.05)
     {
-      ellipse(pos.x + sin(i)*(20+noise(tShape)*(3+(pissedOff*8))), 
-              pos.y + cos(i)*(20+noise(tShape)*(3+(pissedOff*8))), 2, 2);
+      ellipse(pos.x + sin(i)*(20+noise(tShape)*(5+(pissedOff*8))), 
+              pos.y + cos(i)*(20+noise(tShape)*(5+(pissedOff*8))), 2, 2);
               
       tShape += 0.2;
     }
