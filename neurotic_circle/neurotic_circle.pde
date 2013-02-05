@@ -1,19 +1,20 @@
 
-Walker w;
+NeuroticCircle nc;
 
 void setup()
 {
   size(800, 400);
   smooth();
-  frameRate(60);
+  frameRate(40);
   noStroke();
   
-  w = new Walker();  
+  nc = new NeuroticCircle();  
 }
 
 void draw()
 {
-  background(0);
-  w.tick();
-  w.draw();
+  background(nc.getAngerLevel()*50, 0, 0);
+  
+  nc.move();
+  nc.draw();
 }
