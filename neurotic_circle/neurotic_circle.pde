@@ -3,7 +3,7 @@ NeuroticCircle nc;
 
 void setup()
 {
-  size(800, 400);
+  size(550, 250);
   smooth();
   frameRate(40);
   noStroke();

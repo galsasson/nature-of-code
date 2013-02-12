@@ -108,13 +108,11 @@ class NeuroticCircle
   public void draw()
   {
     /* more angry - more red */
-    fill(20 + (angerLevel*235), 20, 20, 20+(angerLevel*70));
-    ellipse(pos.x, pos.y, 50, 50);
+    fill(100 + (angerLevel*155), 100-(angerLevel*100), 100-(angerLevel*100), 255);
     
     /* add individual circles with some noise
      * that depends on the anger level.
      */
-    fill(100 + (angerLevel*155), 100-(angerLevel*100), 100-(angerLevel*100), 255);
     for (float i=0; i<PI*2; i+=0.05)
     {
       ellipse(pos.x + sin(i)*(20+noise(tShape)*(5+(angerLevel*8))), 
