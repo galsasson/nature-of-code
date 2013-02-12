@@ -6,12 +6,6 @@ class BlowerForce
   
   float strength;
   
-  public BlowerForce()
-  {
-    pos = new PVector(width/2, height/2);
-    direction = new PVector(0, -1);
-  }
-  
   public BlowerForce(PVector pos, PVector force)
   {
     this.pos = pos;

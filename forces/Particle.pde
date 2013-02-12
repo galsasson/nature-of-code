@@ -10,16 +10,6 @@ class Particle
   
   color c;
   
-  public Particle()
-  {
-    pos = new PVector(width/2, height/2);
-    prevPos = pos.get();
-    vel = new PVector(0, 0);
-    acc = new PVector(0, 0);
-    
-    mass = 1;
-  }
-  
   public Particle(PVector pos, PVector vel, float mass, color c)
   {
     acc = new PVector(0, 0);
