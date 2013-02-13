@@ -19,7 +19,7 @@ PImage img;
 
 void setup()
 {
-  colorMode(HSB);
+  colorMode(HSB, 360, 100, 100, 255);
   size(600, 400);
   smooth();
   
@@ -107,8 +107,13 @@ void draw()
     
     if (drawMode == "emitter")
           stroke(255, 255, 255, 255);
-    if (drawMode == "wind")
-          stroke(192, 59, 72, 255);
+    if (drawMode == "wind") {
+          stroke(200, 100, 80, 255);
+          noFill();
+          float size = sqrt(pow(mouseX-click1.x, 2) + pow(mouseY-click1.y, 2));
+          ellipse(click1.x, click1.y, size*2, size*2);
+    }
+    
     line(click1.x, click1.y, mouseX, mouseY);
   }
 

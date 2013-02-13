@@ -26,12 +26,12 @@ class BlowerForce
   
   public void draw()
   {
-    fill(198, 59, 72, 120);    
+    fill(200, 100, 80, 120);    
     noStroke();
     ellipse(pos.x, pos.y, strength*2, strength*2); 
     
     strokeWeight(2);
-    stroke(198, 59, 72, 255);
+    stroke(200, 100, 80, 255);
     line(pos.x, pos.y, pos.x + strength*direction.x, pos.y + strength*direction.y);
   }
 }

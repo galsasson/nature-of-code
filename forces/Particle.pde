@@ -54,9 +54,8 @@ class Particle
   
   public void draw(PGraphics buf)
   {
-    strokeWeight(1);
-    stroke(c, 255);
-    fill(c, 200);
+    noStroke();
+    fill(c, 255);
     
     ellipse(pos.x, pos.y, 1+mass, 1+mass);
     

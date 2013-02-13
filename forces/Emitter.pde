@@ -28,7 +28,7 @@ class Emitter
     
       return new Particle(PVector.add(pos, direction), 
                           PVector.mult(direction, 0.2+noise(tSpeed)*0.1),
-                          7*noise(tMass), color(120+random(80), 150, 150));
+                          7*noise(tMass), color(10+random(50), 100, 80));
     }
     
     return null;
