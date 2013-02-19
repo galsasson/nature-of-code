@@ -7,34 +7,39 @@ class SineFish
   
   float rot;
   
+  float initialSize;
   float size;
   
   float t;
   
   ArrayList<SineArm> arms;
   
-  public SineFish(PVector pos)
+  public SineFish(PVector pos, float initSize, int numOfLegs)
   {
     this.pos = pos;
     
-    size = 8;
+    initialSize = initSize;
+    size = initialSize;
     
     rot = 0.1;
     
     arms = new ArrayList<SineArm>();
     
-    for (float i=0; i<PI*2-0.01; i+=PI/4)
+    for (float i=0; i<PI*2-0.01; i+=(PI*2)/numOfLegs)
     {
-      arms.add(new SineArm(new PVector(cos(i)*size, sin(i)*size), i));
+      arms.add(new SineArm(i));
     }
+    
+    t=0;
   }
   
   public void update()
   {
-    rot += 0.02;
+    t+=0.01;
+    size = initialSize+noise(t)*3;
     
     for (int i=0; i<arms.size(); i++)
-          arms.get(i).update();
+          arms.get(i).update(size);
     
   }
   
@@ -44,9 +49,7 @@ class SineFish
     translate(pos.x, pos.y);
     rotate(rot);
     
-    fill(255, 255, 255, 0);
-    strokeWeight(2);
-    stroke(255);
+    fill(255, 255, 255, 80);
     ellipse(0, 0, size*2, size*2);
     
     for (int i=0; i<arms.size(); i++)

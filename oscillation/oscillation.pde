@@ -1,4 +1,5 @@
-SineFish fish;
+
+ArrayList<SineFish> fish; 
 
 void setup()
 {
@@ -6,7 +7,17 @@ void setup()
   smooth();
   frameRate(40);
   
-  fish = new SineFish(new PVector(width/2, height/2));
+  fish = new ArrayList();
+  
+  for (int i=0; i<50; i++)
+  {
+    float x = random(width);
+    float y = random(height);
+    float size = random(2, 6);
+    int legs = (int)random(5, 20);
+    fish.add(new SineFish(new PVector(x, y), size, legs));
+  }
+    
   
   background(0);
 }
@@ -15,6 +26,10 @@ void draw()
 {
   background(0);
   
-  fish.update();
-  fish.draw();
+  for (int i=0; i<fish.size(); i++)
+  {
+    fish.get(i).update();
+    fish.get(i).draw();
+  }  
+  
 }

@@ -9,13 +9,16 @@ class SineArm
   float rot;
   float t;
   
-  public SineArm(PVector pos, float rot)
+  float length;
+  
+  public SineArm(float rot)
   {
-    this.pos = pos;
+    this.pos = new PVector();
     this.rot = rot;
     
     t = random(0,100);
-    speed = 0.1;
+    speed = 0.08;
+    length = ARM_LENGTH + random(4) - 2;
   }
   
   public void setSpeed(float s)
@@ -23,21 +26,25 @@ class SineArm
     speed = s;
   }
   
-  public void update()
+  public void update(float size)
   {
+    pos.x = cos(rot)*size;
+    pos.y = sin(rot)*size;
+    
     t-=speed;
   }
   
   public void draw()
   {
     pushMatrix();
-    strokeWeight(1);
+    noStroke();
+    fill(255, 255, 255, 100);
     translate(pos.x, pos.y);
     rotate(rot);
     
-    for (int i=0; i<ARM_LENGTH; i++)
+    for (int i=0; i<length; i++)
     {
-      ellipse(i, cos(t+i*speed)*5*((float)i/ARM_LENGTH), 1, 1);
+      ellipse(i, cos(t+i*speed)*8*((float)i/length), 2, 2);
     }
     
     popMatrix();
