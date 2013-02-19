@@ -5,10 +5,13 @@ class SineFish
   PVector vel;
   PVector acc;
   
-  float rot;
+  float angAcc;
+  float angVel;
+  float ang;
   
   float initialSize;
   float size;
+  float mass;
   
   float t;
   
@@ -17,11 +20,16 @@ class SineFish
   public SineFish(PVector pos, float initSize, int numOfLegs)
   {
     this.pos = pos;
+    this.vel = new PVector(0, 0);
+    this.acc = new PVector(0, 0);
     
     initialSize = initSize;
     size = initialSize;
+    mass = size*2;
     
-    rot = 0.1;
+    ang = 0;
+    angVel = 0;
+    angAcc = 0;
     
     arms = new ArrayList<SineArm>();
     
@@ -33,9 +41,62 @@ class SineFish
     t=0;
   }
   
+  public void setArmsSpeed(float angle, float speed)
+  {
+    for (int i=0; i<arms.size(); i++)
+    {
+      float angleDiff = abs(angle - (ang+arms.get(i).rot));
+      if (angleDiff > PI*2)
+            angleDiff -= PI*2;
+            
+      if (angleDiff < PI/3 || angleDiff > 2*PI-(PI/3))
+            arms.get(i).setSpeed(speed);
+    }
+  }
+  
+  public void setAllArmsSpeed(float speed)
+  {
+    for (int i=0; i<arms.size(); i++)
+    {
+      arms.get(i).setSpeed(speed);
+    }    
+  }
+  
+  public void drag(float c)
+  {
+    float speed = vel.mag();
+    float dragMag = c * speed * speed;
+    
+    PVector drag = vel.get();
+    drag.mult(-1);
+    drag.normalize();
+    drag.mult(dragMag);
+    applyForce(drag);
+  }
+  
+  public void applyForce(PVector force)
+  {
+    PVector f = PVector.div(force, mass);
+    acc.add(f);
+  }
+  
   public void update()
   {
+    vel.add(acc);
+    pos.add(vel);
+    
+    acc.mult(0);
     t+=0.01;
+    
+    angVel += angAcc;
+    ang += angVel;
+    if (ang > PI*2)
+          ang -= PI*2;
+    angAcc = 0;
+    
+    // like friction for angular motion
+    angVel *= 0.9;
+          
     size = initialSize+noise(t)*3;
     
     for (int i=0; i<arms.size(); i++)
@@ -47,9 +108,10 @@ class SineFish
   {
     pushMatrix();
     translate(pos.x, pos.y);
-    rotate(rot);
+    rotate(ang);
     
-    fill(255, 255, 255, 80);
+    fill(40, 40, 40, 255);
+    noStroke();
     ellipse(0, 0, size*2, size*2);
     
     for (int i=0; i<arms.size(); i++)
@@ -57,5 +119,18 @@ class SineFish
     
     popMatrix();
 
+  }
+  
+  public void move(PVector dir)
+  {
+    PVector d = dir.get();
+    d.normalize();
+    applyForce(d);
+    d.mult(-1);
+    setArmsSpeed(d.heading(), 0.3);
+    if (d.heading() > PI)
+      angAcc = -0.002;
+    else
+      angAcc = 0.002;    
   }
 }
