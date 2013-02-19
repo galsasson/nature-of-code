@@ -1,7 +1,4 @@
 
-
-
-
 ArrayList<Particle> particles = new ArrayList();
 ArrayList<Emitter> emitters = new ArrayList();
 ArrayList<BlowerForce> blowers = new ArrayList();
