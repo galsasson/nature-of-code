@@ -3,7 +3,7 @@ Ocean ocean;
 SineFish myFish;
 ArrayList<SineFish> fish;
 
-final int FISH_NUM = 10;
+final int FISH_NUM = 20;
 final float LIQUID_DRAG = 0.5;
 
 boolean keyUp = false;
@@ -14,6 +14,7 @@ boolean keyLeft = false;
 void setup()
 {
   size(600, 400);
+  colorMode(HSB, 360, 100, 100, 100);
   smooth();
   frameRate(40);
   
@@ -23,14 +24,14 @@ void setup()
   
   for (int i=0; i<FISH_NUM; i++)
   {
-    float x = random(width);
-    float y = random(height);
+    float x = random(width*2) - width;
+    float y = random(height*2) - height;
     float size = random(2, 16);
     int legs = (int)random(5, 20);
-    fish.add(new SineFish(new PVector(x, y), size, legs));
+    fish.add(new SineFish(new PVector(x, y), size, legs, color(random(150)+140, 57, 100)));
   }
   
-  myFish = new SineFish(new PVector(width/2, height/2), 5, 10);
+  myFish = new SineFish(new PVector(0, 0), 5, 10, color(56, 91, 100));
     
   
   background(0);

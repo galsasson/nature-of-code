@@ -13,10 +13,13 @@ class SineArm
   float length;
   float armWidth;
   
-  public SineArm(float rot)
+  color tipColor;
+  
+  public SineArm(float rot, color tipColor)
   {
     this.pos = new PVector();
     this.rot = rot;
+    this.tipColor = tipColor;
     
     t = random(0,100);
     speed = 0.02;
@@ -41,7 +44,7 @@ class SineArm
   public void draw()
   {
     pushMatrix();
-    stroke(30, 30, 30, 255);
+    stroke(0, 0, 100, 20);
     strokeWeight(armWidth);
     translate(pos.x, pos.y);
     rotate(rot);
@@ -52,7 +55,7 @@ class SineArm
     }
     
     noStroke();
-    fill(255);
+    fill(tipColor);
     ellipse(length+1, cos(t+(length+1)*WAVE_DENSITY)*8*((float)(length+1)/length), 3, 3);
     
     popMatrix();

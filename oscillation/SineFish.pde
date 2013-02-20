@@ -13,11 +13,13 @@ class SineFish
   float size;
   float mass;
   
+  color tipColor;
+  
   float t;
   
   ArrayList<SineArm> arms;
   
-  public SineFish(PVector pos, float initSize, int numOfLegs)
+  public SineFish(PVector pos, float initSize, int numOfLegs, color tipColor)
   {
     this.pos = pos;
     this.vel = new PVector(0, 0);
@@ -27,6 +29,8 @@ class SineFish
     size = initialSize;
     mass = size*2;
     
+    this.tipColor = tipColor;
+    
     ang = 0;
     angVel = 0;
     angAcc = 0;
@@ -35,7 +39,7 @@ class SineFish
     
     for (float i=0; i<PI*2-0.01; i+=(PI*2)/numOfLegs)
     {
-      arms.add(new SineArm(i));
+      arms.add(new SineArm(i, tipColor));
     }
     
     t=0;
@@ -110,7 +114,7 @@ class SineFish
     translate(pos.x, pos.y);
     rotate(ang);
     
-    fill(40, 40, 40, 255);
+    fill(0, 0, 100, 20);
     noStroke();
     ellipse(0, 0, size*2, size*2);
     
@@ -121,14 +125,14 @@ class SineFish
 
   }
   
-  public void move(PVector dir)
+  public void move(PVector d)
   {
-    PVector d = dir.get();
     d.normalize();
     applyForce(d);
     d.mult(-1);
     setArmsSpeed(d.heading(), 0.3);
-    if (d.heading() > PI)
+    //println(d.heading());
+    if (d.heading()>1)
       angAcc = -0.002;
     else
       angAcc = 0.002;    
