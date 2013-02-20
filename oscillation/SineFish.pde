@@ -66,7 +66,7 @@ class SineFish
     }    
   }
   
-  public void drag(float c)
+  public void applyDrag(float c)
   {
     float speed = vel.mag();
     float dragMag = c * speed * speed;
@@ -130,9 +130,9 @@ class SineFish
     d.normalize();
     applyForce(d);
     d.mult(-1);
-    setArmsSpeed(d.heading(), 0.3);
-    //println(d.heading());
-    if (d.heading()>1)
+    setArmsSpeed(d.heading2D(), 0.3);
+    
+    if (d.heading2D()>1)
       angAcc = -0.002;
     else
       angAcc = 0.002;    

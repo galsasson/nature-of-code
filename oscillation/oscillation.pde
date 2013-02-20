@@ -3,7 +3,7 @@ Ocean ocean;
 SineFish myFish;
 ArrayList<SineFish> fish;
 
-final int FISH_NUM = 20;
+final int FISH_NUM = 10;
 final float LIQUID_DRAG = 0.5;
 
 boolean keyUp = false;
@@ -53,11 +53,12 @@ void draw()
     {
       f.move(PVector.sub(f.pos,myFish.pos));
     }
-    f.drag(LIQUID_DRAG);
+    
+    f.applyDrag(LIQUID_DRAG);
     
     f.update();
     f.draw();
-  }  
+  }
   
   myFish.setAllArmsSpeed(0.04);
   
@@ -69,8 +70,8 @@ void draw()
     myFish.move(new PVector(1, 0));
   if (keyDown)
     myFish.move(new PVector(0, 1));
-    
-  myFish.drag(LIQUID_DRAG);
+  
+  myFish.applyDrag(LIQUID_DRAG);
   
   myFish.update();
   
