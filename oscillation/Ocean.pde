@@ -17,7 +17,8 @@ class Ocean
   {
     background(231, 100, 20);
     fill(0, 0, 100, 20);
-    
+    stroke(0, 0, 100, 20);
+
     for (int i=0; i<points.size(); i++)
     {
       ellipse(points.get(i).x, points.get(i).y, 2, 2);

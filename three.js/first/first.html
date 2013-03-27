@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>canvas { width: 90%; height: 90% }</style>
+		
+	<!-- Shaders -->
+	<script type="x-shader/x-vertex" id="vertexshader">
+
+		// switch on high precision floats
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+		
+		uniform float time;
+
+		void main()
+		{
+			vec4 v = vec4(position, 1.0);
+			v.x = v.x + sin(v.y+time)*2.0;
+			
+			gl_Position = projectionMatrix * modelViewMatrix * v;
+		}
+
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+
+		void main()
+		{
+			gl_FragColor 	= vec4(1.0,0.0,1.0,0.1);
+		}
+
+	</script>
+
+	<!-- End Shaders -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+
+	</head>
+	<body style="background-color:#000000;">
+		<script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
+		<script src="SineArm.js"></script>
+		<script src="first.js">
+			// Our Javascript will go here.
+		</script>
+	</body>
+</html>

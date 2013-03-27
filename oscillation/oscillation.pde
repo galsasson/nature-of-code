@@ -1,15 +1,19 @@
 
 Ocean ocean;
-SineFish myFish;
+FastFish myFish;
 ArrayList<SineFish> fish;
 
-final int FISH_NUM = 10;
+
+final int FISH_NUM = 20;
 final float LIQUID_DRAG = 0.5;
 
 boolean keyUp = false;
 boolean keyRight = false;
 boolean keyDown = false;
 boolean keyLeft = false;
+
+ChatWindow chat;
+WordSpace wordSpace;
 
 void setup()
 {
@@ -19,6 +23,19 @@ void setup()
   frameRate(40);
   
   ocean = new Ocean();
+  chat = new ChatWindow();
+  wordSpace = new WordSpace(loadFont("Osaka-16.vlw"));
+  
+  /* init words with environment strings */
+  int t=0;
+  for (int y=-200; y<200; y++)
+  {
+    for (int x=-200; x<200; x++)
+    {
+      wordSpace.addWord(new ChunkOfWords(new PVector(x*50+(noise((t+=0.2))-0.5)*5, y*50+(noise((t+=0.2))-0.5)*5), new String("h"), -1));
+    }
+    
+  }
   
   fish = new ArrayList();
   
@@ -31,18 +48,24 @@ void setup()
     fish.add(new SineFish(new PVector(x, y), size, legs, color(random(150)+140, 57, 100)));
   }
   
-  myFish = new SineFish(new PVector(0, 0), 5, 10, color(56, 91, 100));
-    
-  
+  myFish = new FastFish(new PVector(0, 0), 5);
+
   background(0);
+}
+
+void initWorld()
+{
 }
 
 void draw()
 {
   pushMatrix();
   
+  PVector pos = myFish.pos.get();
   translate(-myFish.pos.x+width/2, -myFish.pos.y+height/2);
   ocean.draw();
+  
+  wordSpace.display(myFish.pos, 400);
   
   for (int i=0; i<fish.size(); i++)
   {
@@ -60,16 +83,14 @@ void draw()
     f.draw();
   }
   
-  myFish.setAllArmsSpeed(0.04);
+  myFish.flapSpeed = 0.02;
   
   if (keyLeft)
-    myFish.move(new PVector(-1, 0));
+    myFish.turnLeft();
   if (keyUp)
-    myFish.move(new PVector(0, -1));
+    myFish.forward(4);
   if (keyRight)
-    myFish.move(new PVector(1, 0));
-  if (keyDown)
-    myFish.move(new PVector(0, 1));
+    myFish.turnRight();
   
   myFish.applyDrag(LIQUID_DRAG);
   
@@ -77,8 +98,18 @@ void draw()
   
   myFish.draw();
   
+  chat.update();
+  chat.display(pos.x-width/2, pos.y+height/2);
   popMatrix();
   
+}
+
+void sendText()
+{
+  String str = new String(chat.getString());
+  chat.emptyString();
+  
+  wordSpace.addWord(new ChunkOfWords(new PVector(myFish.pos.x, myFish.pos.y), str, -1));
 }
 
 void keyPressed()
@@ -91,6 +122,12 @@ void keyPressed()
     keyDown = true;
   else if (keyCode == LEFT)
     keyLeft = true;
+    
+    if (keyCode == ENTER)
+    {
+      sendText();
+    }
+    else chat.handleChar(key);
 }
 
 void keyReleased()

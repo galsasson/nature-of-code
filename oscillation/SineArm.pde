@@ -49,9 +49,9 @@ class SineArm
     translate(pos.x, pos.y);
     rotate(rot);
     
-    for (int i=0; i<length; i++)
+    for (int i=0; i<length; i+=4)
     {
-      line(i, cos(t+i*WAVE_DENSITY)*8*((float)i/length), i+1, cos(t+(i+1)*WAVE_DENSITY)*8*((float)(i+1)/length));
+      line(i, cos(t+i*WAVE_DENSITY)*8*((float)i/length), i+3, cos(t+(i+3)*WAVE_DENSITY)*8*((float)(i+3)/length));
     }
     
     noStroke();
