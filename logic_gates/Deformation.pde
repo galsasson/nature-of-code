@@ -10,7 +10,8 @@ class Deformation
     dir = direction.get();
     dir.rotate(PI/2);
     
-    int[] sequence = {1, -1, -1, -1, 1, -1, 1};
+    
+    
     int[] sequence2 = {0, 1, 0, 1, 0, -1, 0, -1, 0, -1, 0, 1, 0, 1, 0, 1, 0};
     
     addSquareWave(70, sequence2);
