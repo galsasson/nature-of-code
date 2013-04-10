@@ -1,9 +1,7 @@
-// Notice how we are using inheritance here!
-// We could have just stored a reference to a VerletParticle object
-// inside the Particle class, but inheritance is a nice alternative
 
-class Particle extends VerletParticle2D {
-
+class Particle extends VerletParticle2D implements SceneNode {
+  
+  SceneNode parent;
   ArrayList<VerletSpring2D> springs;
   float t;
   
@@ -11,8 +9,10 @@ class Particle extends VerletParticle2D {
   int frame;
   int direction;
   
-  Particle(Vec2D loc) {
+  Particle(SceneNode parent, Vec2D loc) {
     super(loc);
+    
+    this.parent = parent;
     
     springs = new ArrayList<VerletSpring2D>();
     
@@ -81,5 +81,25 @@ class Particle extends VerletParticle2D {
   private float getLength(Particle p1, Particle p2)
   {
     return sqrt(pow(p1.x-p2.x, 2) + pow(p1.y - p2.y, 2));
+  }
+  
+  public void setWorldPosition(Vec2D vec)
+  {
+    if (parent != null)
+    {
+      vec.subSelf(parent.getWorldPosition());
+    }
+    
+    set(vec);
+  }
+  
+  public Vec2D getWorldPosition()
+  {
+    Vec2D pos = copy();
+    
+    if (parent != null)
+      pos.addSelf(parent.getWorldPosition());
+    
+    return pos;
   }
 }

@@ -1,25 +1,28 @@
 
 
-class WalkingBuilding
+class WalkingBuilding extends VerletParticle2D implements SceneNode
 {
-  PVector pos;
-  PVector elements;
-  PVector size;
-  PVector rectSize;
+  SceneNode parent;
+  
+  Vec2D elements;
+  Vec2D size;
+  Vec2D rectSize;
   
   color c;
   
   ArrayList<Particle> particles;
   
-  public WalkingBuilding(VerletPhysics2D physics, PVector pos, PVector elements, PVector size)
+  public WalkingBuilding(SceneNode parent, VerletPhysics2D physics, Vec2D pos, Vec2D elements, Vec2D size)
   {
-    this.pos = pos;
+    super(pos);
+    this.parent = parent;
+    
     this.elements = elements;
     this.size = size;
     
-    rectSize = PVector.div(size, elements);
+    rectSize = size.scale(new Vec2D(1/elements.x, 1/elements.y));
     
-    pos.y -= size.y;
+    y -= size.y;
     
     c = color(random(100));
     
@@ -30,15 +33,15 @@ class WalkingBuilding
   {
     particles = new ArrayList<Particle>();
    
-    for (int y=0; y<elements.y; y++)
+    for (int yy=0; yy<elements.y; yy++)
     {
-      for (int x=0; x<elements.x; x++)
+      for (int xx=0; xx<elements.x; xx++)
       {
-        Particle p = new Particle(new Vec2D(pos.x+x*rectSize.x, pos.y+y*rectSize.y));
+        Particle p = new Particle(this, new Vec2D(xx*rectSize.x, yy*rectSize.y));
         particles.add(p);
         physics.addParticle(p);
         
-        if (y==elements.y-1)
+        if (yy==elements.y-1)
         {
           p.addMotion();
           p.lock();
@@ -47,33 +50,33 @@ class WalkingBuilding
     }
     
     // connect with horizontal lines
-    for (int y=0; y<elements.y-1; y++)
+    for (int yy=0; yy<elements.y-1; yy++)
     {
-      for (int x=0; x<elements.x-1; x++)
+      for (int xx=0; xx<elements.x-1; xx++)
       {
-        particles.get((int)(y*elements.x+x)).connectWith(physics, particles.get((int)(y*elements.x+(x+1))));
+        particles.get((int)(yy*elements.x+xx)).connectWith(physics, particles.get((int)(yy*elements.x+(xx+1))));
       }
     }
     
     // connect with vertical lines
-    for (int x=0; x<elements.x; x++)
+    for (int xx=0; xx<elements.x; xx++)
     {
-      for (int y=0; y<elements.y-1; y++)
+      for (int yy=0; yy<elements.y-1; yy++)
       {
-        particles.get((int)(y*elements.x+x)).connectWith(physics, particles.get((int)((y+1)*elements.x+x)));
+        particles.get((int)(yy*elements.x+xx)).connectWith(physics, particles.get((int)((yy+1)*elements.x+xx)));
 
       }
     }
     
     // connect with orizontal lines
-    for (int y=0; y<elements.y-1; y++)
+    for (int yy=0; yy<elements.y-1; yy++)
     {
-      for (int x=0; x<elements.x-1; x++)
+      for (int xx=0; xx<elements.x-1; xx++)
       {
-        particles.get((int)(y*elements.x+x)).connectWith(physics, 
-          particles.get((int)((y+1)*elements.x+(x+1))));
-        particles.get((int)(y*elements.x+(x+1))).connectWith(physics, 
-          particles.get((int)((y+1)*elements.x+x)));
+        particles.get((int)(yy*elements.x+xx)).connectWith(physics, 
+          particles.get((int)((yy+1)*elements.x+(xx+1))));
+        particles.get((int)(yy*elements.x+(xx+1))).connectWith(physics, 
+          particles.get((int)((yy+1)*elements.x+xx)));
       }
     }
 
@@ -81,9 +84,11 @@ class WalkingBuilding
   
   public void display()
   {
+    pushMatrix();
+    translate(x, y);
+    
     fill(c);
     noStroke();
-    
     
     // draw building shape
     beginShape();
@@ -98,6 +103,7 @@ class WalkingBuilding
     endShape();
     
     // draw some windows
+    /*
     noStroke();
     for (int y=0; y<elements.y-3; y++)
       for (int x=0; x<elements.x-1; x++)
@@ -109,15 +115,17 @@ class WalkingBuilding
         Particle p = particles.get((int)(y*elements.x + x));
         rect(p.x+rectSize.x/4, p.y+rectSize.y/4, rectSize.x/2, rectSize.y/2);
       }
-    
+    */
     for (int i=0; i<particles.size(); i++)
     {
       particles.get(i).tick();
-      //particles.get(i).display(true);
+      particles.get(i).display(true);
     }
+    
+    popMatrix();
   }
   
-  public Particle pick(PVector p)
+  public Particle pick(Vec2D p)
   {
     for (int i=0; i<particles.size(); i++)
     {
@@ -128,9 +136,37 @@ class WalkingBuilding
     return null;
   }
   
-  private float getLength(Particle p1, PVector p2)
+  public void moveParticleTo(Particle p, Vec2D target)
   {
-    return sqrt(pow(p1.x-p2.x, 2) + pow(p1.y - p2.y, 2));
+    target.subSelf(this);
+    p.set(target);
+  }
+  
+  
+  private float getLength(SceneNode node1, Vec2D vec)
+  {
+    return node1.getWorldPosition().distanceTo(vec);
+    //return sqrt(pow(pos.x+p1.x-p2.x, 2) + pow(pos.y+p1.y - p2.y, 2));
+  }
+  
+  public void setWorldPosition(Vec2D vec)
+  {
+    if (parent != null)
+    {
+      vec.subSelf(parent.getWorldPosition());
+    }
+    
+    set(vec);
+  }
+  
+  public Vec2D getWorldPosition()
+  {
+    Vec2D pos = copy();
+    
+    if (parent != null)
+      pos.addSelf(parent.getWorldPosition());
+    
+    return pos;
   }
   
   

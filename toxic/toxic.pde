@@ -17,9 +17,9 @@ boolean locked;
 ArrayList<WalkingBuilding> movers = new ArrayList<WalkingBuilding>();
 
 void setup() {
-  size(800,600);
+  size(1000,700);
   smooth();
-  frameRate(60);
+  frameRate(30);
 
   // Initialize the physics
   physics=new VerletPhysics2D();
@@ -30,9 +30,10 @@ void setup() {
   
   //movers.add(new WalkingBuilding(physics, new PVector(200, height-10), new PVector(10, 17), new PVector(200, 400)));
   
-  for (int i=0; i<1; i++)
+  for (int i=0; i<18; i++)
   {
-    movers.add(new WalkingBuilding(physics, new PVector(random(200,400), height-10), new PVector((int)random(3,20), (int)random(10,20)), new PVector(random(50, 400), random(250,500))));
+    movers.add(new WalkingBuilding(null, physics, new Vec2D(random(0,600), height-10), 
+                                  new Vec2D((int)random(4, 7), (int)random(6, 10)), new Vec2D((int)random(150, 230), (int)random(400, 600))));
   }
 //  for (int i=0; i<1; i++)
 //  {
@@ -54,8 +55,7 @@ void draw() {
 
   if (p!= null)
   {
-      p.x = mouseX;
-      p.y = mouseY;
+    p.setWorldPosition(new Vec2D(mouseX, mouseY));
   }
 }
 
@@ -64,7 +64,7 @@ void mousePressed()
   p=null;
   
   for (int i=0; i<movers.size() && p==null; i++)
-    p = movers.get(i).pick(new PVector(mouseX, mouseY));
+    p = movers.get(i).pick(new Vec2D(mouseX, mouseY));
     
   if (p != null)
   {
