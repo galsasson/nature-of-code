@@ -1,9 +1,3 @@
-import ddf.minim.spi.*;
-import ddf.minim.signals.*;
-import ddf.minim.*;
-import ddf.minim.analysis.*;
-import ddf.minim.ugens.*;
-import ddf.minim.effects.*;
 
 import themidibus.*;
 
@@ -16,8 +10,8 @@ ArrayList<Player> players;
 
 ShapeMorpher morpher;
 
-Minim minim;
-AudioOutput out;
+int[] orientalPitches = {36, 37, 40, 41, 42, 45, 46, 48};
+int[] orientalScale = {0, 1, 4, 5, 6, 9, 10};
 
 void setup()
 {
@@ -27,18 +21,15 @@ void setup()
   smooth();
   frameRate(60);
   
-  minim = new Minim(this);
-  out = minim.getLineOut(Minim.STEREO);
-
   myBus = new MidiBus(this, 0, 0);
 
   creatures = new ArrayList<Creature>();
   morpher = new ShapeMorpher();
   
   players = new ArrayList<Player>();
-  players.add(new Player(new PVector(width/2-100, height-70), out));
-  players.add(new Player(new PVector(width/2, height-70), out));
-  players.add(new Player(new PVector(width/2+100, height-70), out));
+  players.add(new Player(new PVector(width/2-100, height-70)));
+  players.add(new Player(new PVector(width/2, height-70)));
+  players.add(new Player(new PVector(width/2+100, height-70)));
 
   for (int i=0; i<30; i++)
   {

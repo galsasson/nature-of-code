@@ -11,7 +11,7 @@ class Player
   
   float[] frequencies = {130.81, 138.59, 164.81, 174.61, 196, 207.65, 246.94, 261.63, 277.18, 329.63, 349.23, 392, 415.30, 493.88, 523.25}; 
     
-  public Player(PVector p, AudioOutput out)
+  public Player(PVector p)
   {
     pos = p;
     angle = 0;
@@ -31,23 +31,12 @@ class Player
     {
       lastLaserLength = getLaserIntersection();
 
-      int noteVal = (int)map(lastLaserLength, 0, 1, 40, 90);
+      int noteVal = orientalPitches[(int)map(lastLaserLength, 0, 1, 0, 8)]+12;
       Note n = new Note(noteVal, 127, 0, 500);
       //if (frameCount % 10 == playOn)
-      if (random(1) > 0.95)
+      if (random(1) > 0.8)
         n.play();
     }
-  
-
-//      wave.setFreq(frequencies[(int)map(maxInter, 5, 35.5, 0, 15)]);
-//      wave.setAmp(0.2);
-      
-/*
-      if (frameCount % 4 == playOn)
-        wave.setAmp(0.3);
-      else
-        wave.setAmp(0.1);
-*/
   }
   
   /* calculate the intersection between the laser and the shape, return result between 0-1 */
