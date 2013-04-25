@@ -50,7 +50,7 @@ class Genome
     Genome newGen = new Genome();
     
     /* crossover creature shape */
-    int switchOn = int(random(shape.size()));
+    int switchOn = int(random(shape.size()/4, shape.size()*3/4));
     for (int i=0; i<shape.size(); i++)
     {
       if (i<switchOn)
@@ -89,9 +89,9 @@ class Genome
       {
         /* mutate */
         if (i%2==0)
-          shape.get(i).x = random(SIZE);
+          shape.get(i).x = random(-SIZE/2, SIZE/2);
         else
-          shape.get(i).y = random(SIZE);
+          shape.get(i).y = random(-SIZE/2, SIZE/2);
       }
     }
   }
@@ -100,21 +100,22 @@ class Genome
   {
     shape = new ArrayList<PVector>();
 
-    float x = random(SIZE);
-    float y = random(SIZE);
+    float x = random(-SIZE/2, SIZE/2);
+    float y = random(-SIZE/2, SIZE/2);
     shape.add(new PVector(x, y));
 
-    for (int i=0; i<MAX_AGE; i++) {
+    for (int i=1; i<MAX_AGE; i++) {
       if (i%2 == 0) {
-        x = random(SIZE);
+        x = random(-SIZE/2, SIZE/2);
         if (random(1) < spikynessLevel)
-          y = random(SIZE);
+          y = random(-SIZE/2, SIZE/2);
       }
       else {
-        y = random(SIZE);
+        y = random(-SIZE/2, SIZE/2);
         if (random(1) < spikynessLevel)
-          x = random(SIZE);
+          x = random(-SIZE/2, SIZE/2);
       }
+
       shape.add(new PVector(x, y));
     }
   }
@@ -133,7 +134,7 @@ class Genome
       // for every vertex, calculate movement
       for (int t=0; t<27; t++)
       {
-        vertexDistortion.add(new PVector(noise(tX)*distortionLevel, noise(tY)*distortionLevel));
+        vertexDistortion.add(new PVector((noise(tX)-0.5)*distortionLevel, (noise(tY)-0.5)*distortionLevel));
         tX += 0.1;
         tY += 0.1;
       }

@@ -1,73 +1,138 @@
+import ddf.minim.spi.*;
+import ddf.minim.signals.*;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.ugens.*;
+import ddf.minim.effects.*;
+
+import themidibus.*;
+
+MidiBus myBus;
 
 ArrayList<Creature> creatures;
+Creature mouseCreature = null;
+
+ArrayList<Player> players;
+
+ShapeMorpher morpher;
+
+Minim minim;
+AudioOutput out;
 
 void setup()
 {
-  size(1100, 600);
+  size(620, 600);
   background(255);  
   stroke(0);
   smooth();
-  frameRate(30);
+  frameRate(60);
+  
+  minim = new Minim(this);
+  out = minim.getLineOut(Minim.STEREO);
+
+  myBus = new MidiBus(this, 0, 0);
 
   creatures = new ArrayList<Creature>();
+  morpher = new ShapeMorpher();
   
-  for (int i=0; i<500; i++)
+  players = new ArrayList<Player>();
+  players.add(new Player(new PVector(width/2-100, height-70), out));
+  players.add(new Player(new PVector(width/2, height-70), out));
+  players.add(new Player(new PVector(width/2+100, height-70), out));
+
+  for (int i=0; i<30; i++)
   {
-    Creature c = new Creature(40 + i%18*60, 40 + i/18*60);
+    Creature c = new Creature(40 + i%10*60, 40 + i/10*60, morpher);
     c.initRandom();
     creatures.add(c);
   }
-/*
-  for (int i=0; i<14; i++)
-  {
-    for (int j=0; j<16; j++)
-    {
-      Creature c = creatures.get(i).clone();
-      c.age += j+1;
-      c.pos.y = 90+j*40;
-      creatures.add(c);
-    }
-  }
-*/
 }
 
 void draw()
 {
   background(255);
 
-  ArrayList<Creature> deadOnes = new ArrayList<Creature>();
-
-  int totalFit = 0;
-  
   for (Creature c : creatures)
   {
-    c.update(0);
-    if (!c.isAlive()) {
-      deadOnes.add(c);
-      continue;
-    }
+    c.update();
     c.draw();
-    
-    totalFit += c.getFitness();
   }
   
-  // remove dead creatures
-  for (Creature d : deadOnes)
+  for (Player p : players)
   {
-    creatures.remove(d);
+    p.update();
+    p.draw();
   }
-  
-      
-    fill(0);
-    text(totalFit, 10, height-20);
 }
 
 void mousePressed()
 {
-//  for (int i=0; i<100; i++)
-    nextGen();
+  for (Creature c : creatures)
+  {
+    if (c.pick(new PVector(mouseX, mouseY)))
+    {
+      c.animateToCircle();
+      mouseCreature = c;      
+      c.setPosition(new PVector(mouseX, mouseY));
+      
+      /* check if grabbed a creature from a player */
+      for (Player p : players)
+      {
+        if (p.getCreature() == mouseCreature)
+        {
+          p.empty();
+          mouseCreature.angle = 0;
+        }
+      }
+      
+      return;
+    }
+  }
 }
 
+void mouseDragged()
+{
+  if (mouseCreature == null)
+    return;
+    
+  mouseCreature.setPosition(new PVector(mouseX, mouseY));
+}
+
+void mouseReleased()
+{
+  if (mouseCreature == null)
+    return;
+    
+  Creature newc = null;
+  
+  mouseCreature.animateToOrig();
+  
+  for (Creature c : creatures)
+  {
+    if (c != mouseCreature && c.pick(new PVector(mouseX, mouseY)))
+    {
+      newc = mouseCreature.mate(c);
+      newc.pos = new PVector(c.pos.x, c.pos.y+60);
+      mouseCreature.pos.x -= 40;
+      c.pos.x += 40;
+    }
+  }
+  
+  if (newc != null) 
+    creatures.add(newc);
+
+  for (Player p : players)
+  {
+    if (p.pick(new PVector(mouseX, mouseY)))
+    {
+      p.setCreature(mouseCreature);
+    }
+  }
+  
+  mouseCreature = null;
+}
+
+/*
 void nextGen()
 {
   ArrayList<Creature> selectedOnes = new ArrayList<Creature>();
@@ -95,5 +160,5 @@ void nextGen()
   
   creatures = newGen;
 }
-
+*/
 

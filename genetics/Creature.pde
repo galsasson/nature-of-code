@@ -1,136 +1,110 @@
-int MAX_AGE = 30;
-int SIZE = 30;
+int MAX_AGE = 16;
+float SIZE = 50;
 
 class Creature
 {
   public PVector pos;
   public float age;
+  float angle;
   public int fitness;
   
   Genome genome;
-
-  public Creature(float x, float y)
+  ShapeMorpher morpher;
+  Animator anim;
+  
+  int beatTime = 30;
+  float t=0;
+  
+  public Creature(float x, float y, ShapeMorpher m)
   {
     pos = new PVector(x, y);
-    age = 25;
+    morpher = m;
+    age = MAX_AGE;
+    angle = 0;
+    
     genome = new Genome();
+    anim = new Animator();
   }
   
   public void initRandom()
   {
     genome.initRandom();
-    
-    calcFitness();
   }
 
-  public void update(float timeSinceLastUpdate)
+  public void update()
   {
-    age += timeSinceLastUpdate;
+    anim.update();
   }
 
   public void draw()
   {
+    strokeWeight(1);
     stroke(50);
-    fill(255);
+    fill(0);
 
     pushMatrix();
-    translate(pos.x - SIZE/2, pos.y - SIZE/2);
-
+    translate(pos.x, pos.y);
+    rotate(angle);
+    
+    
     beginShape();
     for (int i=0; i<(int)age; i++)
     {
-//      vertex(genome.shape.get(i).x + genome.distortion.get(i).get(frameCount%30).x, 
-//                genome.shape.get(i).y + genome.distortion.get(i).get(frameCount%30).y);
-      vertex(genome.shape.get(i).x, genome.shape.get(i).y);
+      PVector shapePoint = morpher.getPoint(i, 0, anim.getNextFrame(), genome.shape);
+      PVector p = PVector.add(shapePoint, genome.distortion.get(i).get(frameCount%30));
+      vertex(p.x, p.y);
     }
 
-    vertex(genome.shape.get(0).x, genome.shape.get(0).y);
-    
-//    vertex(genome.shape.get(0).x + genome.distortion.get(0).get(frameCount%30).x,
-//                genome.shape.get(0).y + genome.distortion.get(0).get(frameCount%30).y);
+    PVector shapePoint = morpher.getPoint(0, 0, anim.getNextFrame(), genome.shape);
+    vertex(shapePoint.x + genome.distortion.get(0).get(frameCount%30).x,
+                shapePoint.y + genome.distortion.get(0).get(frameCount%30).y);
+    noFill();
     endShape();
-    
-    fill(0);
-    text(fitness, -5, 45);
 
     popMatrix();
   }
-
-  public void calcFitness()
+  
+  public boolean pick(PVector p)
   {
-    /* draw the shape on a pgraphics */
-    PGraphics buf = createGraphics(30, 30, JAVA2D);
-    
-    buf.beginDraw();
-    buf.stroke(0);
-    buf.background(255);
-    buf.noFill();
-    buf.strokeWeight(1);
-    buf.beginShape();
-    for (int i=0; i<age; i++)
-    {
-      buf.vertex(genome.shape.get(i).x, genome.shape.get(i).y);
-    }
-    buf.vertex(genome.shape.get(0).x, genome.shape.get(0).y);
-    buf.endShape();
-    buf.endDraw();
-    
-    // check for vertical symetry
-    int verDiff = 0;    
-    for (int y=0; y<SIZE/2; y++)
-    {
-      for (int x=0; x<SIZE; x++)
-      {
-        int c1 = buf.get(x, y);
-        int c2 = buf.get(x, SIZE-y);
-        verDiff += sqrt(pow(red(c1) - red(c2), 2) + pow(green(c1) - green(c2),2) + pow(blue(c1) - blue(c2), 2));
-      }
+    if (PVector.dist(p, pos) < SIZE-10) {
+      return true;
     }
     
-    // check for horizontal symetry
-    int horDiff = 0;    
-    for (int y=0; y<SIZE; y++)
-    {
-      for (int x=0; x<SIZE/2; x++)
-      {
-        int c1 = buf.get(x, y);
-        int c2 = buf.get(SIZE-x, y);
-        horDiff += sqrt(pow(red(c1) - red(c2), 2) + pow(green(c1) - green(c2),2) + pow(blue(c1) - blue(c2), 2));
-      }
-    }
-
-    fitness = horDiff + verDiff;
+    return false;
   }
   
-  public int getFitness()
+  public void animateToCircle()
   {
-    return fitness;
+    anim.init(0, 1, 7);
+    anim.play();
   }
-
-  public boolean isAlive()
+  
+  public void animateToOrig()
   {
-    if (age > MAX_AGE)
-      return false;
-
-    return true;
+    anim.init(1, 0, 3);
+    anim.play();
   }
   
   public Creature mate(Creature c)
   {
-    Creature newC = new Creature(pos.x, pos.y);
+    Creature newC = new Creature(pos.x, pos.y, morpher);
     newC.genome = genome.crossover(c.genome);
-    newC.genome.mutate(0);
-    newC.calcFitness();
+    newC.genome.mutate(0.1);
+
     return newC;
+  }
+  
+  public void setPosition(PVector p)
+  {
+    pos = p;
   }
 
   public Creature clone()
   {
-    Creature c = new Creature(pos.x, pos.y);
+    Creature c = new Creature(pos.x, pos.y, morpher);
     c.age = age;
     
     c.genome = genome.clone();
-    c.calcFitness();
     
     return c;
   }
