@@ -11,10 +11,9 @@ class Deformation
     dir.rotate(PI/2);
     
     
+    int[] sequence = {0, 1, 0, 1, 0, -1, 0, -1, 0, -1, 0, 1, 0, 1, 0, 1, 0};
     
-    int[] sequence2 = {0, 1, 0, 1, 0, -1, 0, -1, 0, -1, 0, 1, 0, 1, 0, 1, 0};
-    
-    addSquareWave(70, sequence2);
+    addSquareWave(70, sequence);
     addRandom(70, 4);
   }
   

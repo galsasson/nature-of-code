@@ -16,7 +16,7 @@ void setup()
   smooth();
   
   minim = new Minim(this);
-  out = minim.getLineOut(Minim.STEREO, 2048);
+  out = minim.getLineOut(Minim.STEREO, 128);
   
   gen = new SignalGenerator();  
   out.addSignal(gen);
@@ -26,7 +26,7 @@ void draw()
 {
   background(0);
   
-  gen.setVal((int)map(mouseY, 0, height, 256, 4));
+  gen.setVal((int)map(mouseY, 0, height, 128, 4));
 }
 
 void stop()

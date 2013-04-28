@@ -21,7 +21,7 @@ class SignalGenerator implements AudioSignal
     float t=random(100000);
     for (int i=0; i<samp.length; i++)
     {
-      samp[i] = ((counter/val)%2 == 0) ? 0.4 : -0.4 + (noise(t)-0.5)*0.7;
+      samp[i] = ((counter/val)%2 == 0) ? 0.4 : -0.4;
       counter++;
       t+=0.1;
     }

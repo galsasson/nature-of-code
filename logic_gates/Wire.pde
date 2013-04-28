@@ -1,4 +1,6 @@
 
+int SEQUENCE_TIME=5;
+
 
 class Wire
 {
@@ -9,11 +11,11 @@ class Wire
   
   Deformation deform;
   
-  int frame;
+  float frame;
   
   public Wire(PVector start, PVector direction, float length)
   {
-    pos = start;
+    pos = start;//line.get(0);
     dir = direction;
     dir.normalize();
     
@@ -49,7 +51,7 @@ class Wire
     beginShape();
     for (int i=0; i<line.size(); i++)
     {
-      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-frame+i)%deform.size()));
+      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-(int)frame+i)%deform.size()));
       if (i>line.size()-5)
         start.y *= (float)(line.size()-i) / 5;
       
@@ -62,7 +64,7 @@ class Wire
     beginShape();
     for (int i=0; i<line.size(); i++)
     {
-      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-frame+i)%deform.size()));
+      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-(int)frame+i)%deform.size()));
       if (i>line.size()-5)
         start.y *= (float)(line.size()-i) / 5;
 
@@ -75,7 +77,7 @@ class Wire
     beginShape();
     for (int i=0; i<line.size(); i++)
     {
-      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-frame+i)%deform.size()));
+      PVector start = PVector.add(line.getPoint(i), deform.getFrame((deform.size()-(int)frame+i)%deform.size()));
       if (i>line.size()-5)
         start.y *= (float)(line.size()-i) / 5;
 
@@ -86,12 +88,12 @@ class Wire
     // draw start point
     fill(200);
     noStroke();
-    PVector p = PVector.add(line.getPoint(0), deform.getFrame((deform.size()-frame)%deform.size()));
+    PVector p = PVector.add(line.getPoint(0), deform.getFrame((deform.size()-(int)frame)%deform.size()));
     rect(p.x-10, p.y-10, 5, 20);
     rect(p.x-5, p.y-2, 5, 4);
     ellipse(line.getPoint(line.size()-1).x, line.getPoint(line.size()-1).y, 5, 5);
 
-    frame += 1;//(int)t;
+    frame += 1.5;//(int)t;
     frame %= deform.size();
       
     //t+=2;
