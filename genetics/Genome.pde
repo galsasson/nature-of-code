@@ -81,6 +81,43 @@ class Genome
     return newGen;
   }
   
+    public Genome crossover2(Genome c2)
+  {
+    Genome newGen = new Genome();
+    
+    /* crossover creature shape */
+    int switchOn = int(random(SIZE/4, shape.size()*3/4));
+    for (int i=0; i<shape.size(); i++)
+    {
+      if (random(1)<0.5/*switchOn*/)
+        newGen.shape.add(shape.get(i).get());
+      else
+        newGen.shape.add(c2.shape.get(i).get());
+    }
+    
+    /* crossover distortion */
+    for (int v=0; v<distortion.size(); v++)
+    {
+      ArrayList<PVector> vm1 = distortion.get(v);
+      ArrayList<PVector> vm2 = c2.distortion.get(v);      
+      ArrayList<PVector> newVertexMotion = new ArrayList<PVector>();
+      
+      switchOn = int(random(vm1.size()));
+      for (int i=0; i<vm1.size(); i++)
+      {
+        if (i<switchOn)
+          newVertexMotion.add(vm1.get(i).get());
+        else
+          newVertexMotion.add(vm2.get(i).get());
+      }
+      
+      newGen.distortion.add(newVertexMotion);
+    }
+    
+    return newGen;
+  }
+
+  
   public void mutate(float m)
   {
     for (int i=0; i<shape.size(); i++)

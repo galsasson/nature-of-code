@@ -4,6 +4,7 @@ class ShapeMorpher
   public ArrayList<PVector> circle;
   public ArrayList<PVector> point;
   
+  
   public ShapeMorpher()
   {
     initCircle();

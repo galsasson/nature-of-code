@@ -15,15 +15,18 @@ class Note extends Thread
   
   public void run()
   {
-    playNote();
+    try
+    {
+      Thread.sleep((int)random(5));
+      playNote();
     
-    try {
-    Thread.sleep(timeMs);
+      Thread.sleep(timeMs);
+    
+      stopNote();
     }
     catch (Exception e){
     }
-    
-    stopNote();
+
   }
   
   private void play()
