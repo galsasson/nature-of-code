@@ -15,14 +15,16 @@ class Creature extends VerletParticle2D
   int beatTime = 30;
   float t=0;
   
+  boolean isRawType;
+  int rawIndex;
+  
   public Creature(float x, float y, ShapeMorpher m)
   {
     super(x, y);
-//    addVelocity(new Vec2D(0, 1));
-//    pos = new PVector(x, y);
     morpher = m;
     age = MAX_AGE;
     rotation = 0;
+    isRawType = false;
     
     genome = new Genome();
     anim = new Animator();
@@ -32,6 +34,21 @@ class Creature extends VerletParticle2D
   {
     genome.initRandom();
   }
+  
+  public void setToRaw()
+  {
+    isRawType = true;
+    anim.init(0, 1, 20);
+    anim.play();
+  }
+  
+  public void setToCreature()
+  {
+    genome.initRandom();
+    anim.init(1, 0, 10);
+    anim.play();
+    isRawType = false;
+  }
 
   public void updateAnimation()
   {
@@ -40,15 +57,12 @@ class Creature extends VerletParticle2D
 
   public void draw()
   {
-    strokeWeight(1);
-    stroke(50);
-    fill(0);
-
     pushMatrix();
     translate(x, y);  
     g.rotate(rotation);
     
     noFill();
+    stroke(colorScheme.getDark());
     strokeWeight(2);
     beginShape();
     for (int i=0; i<(int)age; i++)
@@ -84,12 +98,18 @@ class Creature extends VerletParticle2D
   
   public void animateToCircle(float amount, int frames)
   {
+    if (isRawType)
+      return;
+      
     anim.init(0, amount, frames);
     anim.play();
   }
   
   public void animateToOrig(float fromAmount, int frames)
   {
+    if (isRawType)
+      return;
+      
     anim.init(fromAmount, 0, frames);
     anim.play();
   }

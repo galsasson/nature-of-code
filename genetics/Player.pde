@@ -28,6 +28,9 @@ class Player
   float progressFactor;
   int beatsPerNote;
   int holdTime;
+  int constantVolume;
+  
+  String displayStr;
 
     
   public Player(PVector p, String name, int oct)
@@ -35,6 +38,7 @@ class Player
     pos = p;
     octave = oct;
 
+    constantVolume = 0;
     initPlayer(name);    
     
     angle = 0;
@@ -54,20 +58,33 @@ class Player
       progressFactor = PI*2/(24*4*4);
       beatsPerNote=12;
       holdTime = 300;
+      displayStr = "Ponk";
     }
-    if (name == "Guitar-Reg")
+    else if (name == "Guitar-Reg")
     {
       channel = 1;
       progressFactor = PI*2/(24*4);
       beatsPerNote=6;
       holdTime = 300;
+      displayStr = "Wee";
     }
-    if (name == "Pad-Fat")
+    else if (name == "Guitar-Reg-Fast")
+    {
+      channel = 1;
+      progressFactor = PI*2/24*6;
+      beatsPerNote=6;
+      holdTime = 300;
+      constantVolume = 90;
+      displayStr = "Weeee";
+    }
+    else if (name == "Pad-Fat")
     {
       channel = 2;
       progressFactor = PI*2/(24*4*8);
       beatsPerNote=192;
-      holdTime=2500;
+      holdTime=2600;
+      constantVolume = 100;
+      displayStr = "Wow";
     }  
   }
 
@@ -88,10 +105,14 @@ class Player
       
         if (playCounter % beatsPerNote == playOn) {
         
-          if (lastLaserLength != 1)
+          if (lastLaserLength < 0.99)
           {
+            int vol = constantVolume;
             int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)]+12;
-            note = new Note(noteVal + octave*12, creature.genome.getVolume(angle), channel, holdTime);
+            if (vol == 0) {
+              vol = creature.genome.getVolume(angle);
+            }
+            note = new Note(noteVal + octave*12, vol, channel, holdTime);
             note.play();
             ring = new NoteRing(new PVector(0, 95), 40-lastLaserLength*20, 5);
           }
@@ -152,7 +173,7 @@ class Player
     translate(pos.x, pos.y);
     
     noFill();
-    stroke(0);
+    stroke(colorScheme.getDark());
     strokeWeight(1);
     
     line(-30, 40, -36, 0);
@@ -190,18 +211,24 @@ class Player
     pushMatrix();
     translate(pos.x, pos.y);
     
+    noFill();
     strokeWeight(2);
-    stroke(0);
+    stroke(colorScheme.getDark());
     arc(-50, 0, 180, 180, -PI/7, PI/7, OPEN);
     line(40, 0, 80, 0);
     
-    stroke(255, 0, 0);
-    strokeWeight(2);
+    stroke(190, 0, 0);
+    fill(190, 0, 0);
+    strokeWeight(1);
     
     float end = map(lastLaserLength, 0, 1, 5, 35.5);
     line(40, 0, end, 0);
-    stroke(255, 0, 0, 100);
-    ellipse(end, 0, 5, 5);    
+    stroke(190, 0, 0, 100);
+    ellipse(end, 0, 4, 4);
+
+    fill(colorScheme.getDark());
+    textFont(font, 16);
+    text(displayStr, 42, -2);    
     
     popMatrix();
   }

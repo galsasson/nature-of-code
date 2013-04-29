@@ -37,11 +37,13 @@ class ShapeMorpher
   {
     amount = constrain(amount, 0, 1);
     
+    /* morph into a point */
     if (type == 0)
     {
       PVector diff = PVector.sub(point.get(index), shape.get(index));
       return PVector.add(shape.get(index), PVector.mult(diff, amount));
     }
+    /* morph into a circle */
     else if (type == 1)
     {
       PVector diff = PVector.sub(circle.get(index), shape.get(index));

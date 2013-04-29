@@ -12,9 +12,15 @@ Creature mouseCreature = null;
 
 ArrayList<Player> players;
 
+RawPortal rawPortal;
+
 ShapeMorpher morpher;
 
+int beatCounter;
 boolean systemReady = false;
+PFont font;
+
+ColorScheme colorScheme;
 
 void setup()
 {
@@ -24,6 +30,9 @@ void setup()
   smooth();
   frameRate(60);
   
+  font = loadFont("ShareTech-Regular-16.vlw");
+  textFont(font, 16);
+  
   myBus = new MidiBus(this, 0, 0);
   physics = new VerletPhysics2D();
   
@@ -32,23 +41,36 @@ void setup()
   creatures = new ArrayList<Creature>();
   morpher = new ShapeMorpher();
   
+  colorScheme = new ColorScheme();
+  rawPortal = new RawPortal(new PVector(60, height-100));
+  beatCounter = 0;
+  
   players = new ArrayList<Player>();
   
-  players.add(new Player(new PVector(width-100, 100), "Pad-Fat", -1));
-  players.add(new Player(new PVector(width-100, 200), "Pad-Fat", 0));
+  players.add(new Player(new PVector(width-100, 650), "Pad-Fat", -1));
+  players.add(new Player(new PVector(width-100, 550), "Pad-Fat", 0));
 
-  players.add(new Player(new PVector(width-100, 300), "Guitar-Balladeer", -1));
-  players.add(new Player(new PVector(width-100, 400), "Guitar-Balladeer", 0));
+  players.add(new Player(new PVector(width-100, 450), "Guitar-Balladeer", -1));
+  players.add(new Player(new PVector(width-100, 350), "Guitar-Balladeer", 0));
   
-  players.add(new Player(new PVector(width-100, 500), "Guitar-Reg", 0));
-  players.add(new Player(new PVector(width-100, 600), "Guitar-Reg", 1));
-
+  players.add(new Player(new PVector(width-100, 250), "Guitar-Reg", 0));
+  players.add(new Player(new PVector(width-100, 150), "Guitar-Reg", 1));
+  players.add(new Player(new PVector(width-100, 50), "Guitar-Reg-Fast", 1));
+  
   for (int i=0; i<20; i++)
   {
-    Creature c = new Creature(width/2 - 10*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
+    Creature c = new Creature(width/2 - 7*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
     c.initRandom();
     addCreature(c);
   }
+
+//  for (int i=0; i<3; i++)
+//  {  
+//    Creature c = new Creature(50 + i*60, height-80, morpher);
+//    c.initRandom();
+//    c.setToRaw();
+//    addCreature(c);
+//  }
   
   systemReady = true;
 }
@@ -64,9 +86,10 @@ void addCreature(Creature c)
 
 void draw()
 {
-  background(255);
+  background(colorScheme.getLight());
   
   physics.update();
+  colorScheme.update();
 
   for (Creature c : creatures)
   {
@@ -79,10 +102,13 @@ void draw()
     //p.update();
     p.draw2();
   }
+  
   strokeWeight(3);
-  stroke(0);
-  line(width-20, 100, width-20, height-50);
+  stroke(colorScheme.getDark());
+  line(width-20, 50, width-20, height-50);
   line(width-20, height-50, 0, height-50);
+  
+  rawPortal.draw();
 }
 
 void mousePressed()
@@ -95,6 +121,8 @@ void mousePressed()
       mouseCreature = c;
       c.lock();     
       c.set(mouseX, mouseY);
+      if (c.isRawType)
+        c.setToCreature();
 //      c.removeAllBehaviors();
       
       /* check if grabbed a creature from a player */
@@ -146,13 +174,20 @@ void mouseReleased()
     {
 //      mouseCreature.lock();
       p.setCreature(mouseCreature);
+      
+      // transition from white to black
+//      doTransitions();
     }
+  }
+  
+  if (rawPortal.pick(new PVector(mouseX, mouseY)))
+  {
+    mouseCreature.set(rawPortal.pos.x, rawPortal.pos.y);
+    mouseCreature.setToRaw();
   }
   
   mouseCreature = null;
 }
-
-int counter=0;
 
 void rawMidi(byte[] data) {
   if (!systemReady)
@@ -164,25 +199,25 @@ void rawMidi(byte[] data) {
     {
       p.setBeat();
     }
-    counter = 0;
+    beatCounter = 0;
   }
   
    /* clock message */
   if (data[0] == (byte)0xf8) {
-    counter++;
-    if (counter==24*4) {
-      counter = 0;
+    beatCounter++;
+    if (beatCounter==24*4) {
+      beatCounter = 0;
     }
     
     /* beat animation */
-    if (counter == 24*4-20)
+    if (beatCounter == 24*4-20)
     {
       for (Creature c : creatures)
       {
         c.animateToCircle(0.3, 20);
       }
     }
-    else if (counter == 24*4-1)
+    else if (beatCounter == 24*4-1)
     {
       for (Creature c : creatures)
       {
@@ -191,14 +226,14 @@ void rawMidi(byte[] data) {
     }
     
     /* off beat animation */
-    if (counter == 24*2-10)
+    if (beatCounter == 24*2-10)
     {
       for (Creature c : creatures)
       {
         c.animateToCircle(0.2, 20);
       }
     }
-    else if (counter == 24*2-3)
+    else if (beatCounter == 24*2-3)
     {
       for (Creature c : creatures)
       {
@@ -213,6 +248,19 @@ void rawMidi(byte[] data) {
     }
 
   }
+}
+
+public void doTransitions()
+{
+  int activePlayers = 0;
+  for (Player p : players)
+  {
+    if (p.getCreature() != null)
+      activePlayers++;
+  }
+  
+  if (activePlayers >= 5)
+    colorScheme.startFlip(20);
 }
 
 /*
