@@ -16,8 +16,6 @@ ShapeMorpher morpher;
 
 boolean systemReady = false;
 
-PImage speakerImg;
-
 void setup()
 {
   size(1280, 800);
@@ -34,22 +32,20 @@ void setup()
   creatures = new ArrayList<Creature>();
   morpher = new ShapeMorpher();
   
-  // load resources
-  speakerImg = loadImage("img/speaker_new.jpg");
-  
   players = new ArrayList<Player>();
-  players.add(new Player(new PVector(width/4-100, height-160), "Guitar-Balladeer", -1));
-  players.add(new Player(new PVector(width/4, height-160), "Guitar-Balladeer", 0));
   
-  players.add(new Player(new PVector(width/2-50, height-160), "Pad-Fat", -1));
-  players.add(new Player(new PVector(width/2+50, height-160), "Pad-Fat", 0));
-  
-  players.add(new Player(new PVector(width*3/4, height-160), "Guitar-Reg", 0));
-  players.add(new Player(new PVector(width*3/4+100, height-160), "Guitar-Reg", 1));
+  players.add(new Player(new PVector(width-100, 100), "Pad-Fat", -1));
+  players.add(new Player(new PVector(width-100, 200), "Pad-Fat", 0));
 
-  for (int i=0; i<100; i++)
+  players.add(new Player(new PVector(width-100, 300), "Guitar-Balladeer", -1));
+  players.add(new Player(new PVector(width-100, 400), "Guitar-Balladeer", 0));
+  
+  players.add(new Player(new PVector(width-100, 500), "Guitar-Reg", 0));
+  players.add(new Player(new PVector(width-100, 600), "Guitar-Reg", 1));
+
+  for (int i=0; i<20; i++)
   {
-    Creature c = new Creature(40 + i%20*60, 40 + i/20*60, morpher);
+    Creature c = new Creature(width/2 - 10*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
     c.initRandom();
     addCreature(c);
   }
@@ -81,8 +77,12 @@ void draw()
   for (Player p : players)
   {
     //p.update();
-    p.draw();
+    p.draw2();
   }
+  strokeWeight(3);
+  stroke(0);
+  line(width-20, 100, width-20, height-50);
+  line(width-20, height-50, 0, height-50);
 }
 
 void mousePressed()

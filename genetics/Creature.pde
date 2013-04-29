@@ -66,6 +66,13 @@ class Creature extends VerletParticle2D
     popMatrix();
   }
   
+  public PVector getPointPos(int index)
+  {
+      PVector shapePoint = morpher.getPoint(index, 1, anim.getNextFrame(), genome.shape);
+      PVector p = PVector.add(shapePoint, genome.distortion.get(index).get(frameCount%30));
+      return p;
+  }
+  
   public boolean pick(Vec2D p)
   {
     if (distanceTo(p) < SIZE-10) {

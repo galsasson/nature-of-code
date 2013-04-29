@@ -4,11 +4,14 @@ class Genome
 {
   public ArrayList<PVector> shape;
   public ArrayList<ArrayList<PVector>> distortion;
+  public int[] volume;
   
   public Genome()
   {
     shape = new ArrayList<PVector>();
     distortion = new ArrayList<ArrayList<PVector>>();
+    volume = new int[360];
+    initVolume();
   }
   
   public void initRandom()
@@ -188,4 +191,25 @@ class Genome
     }
   }
   
+  private void initVolume()
+  {
+    for (int i=0; i<volume.length; i++)
+    {
+      volume[i] = (int)random(128);
+    }
+  }
+  
+  public int getVolume(float ang)
+  {
+    int angle = (int)degrees(ang);
+//    if (angle < 0 || angle > 359)
+//      println("angle = " + angle);
+    int vol = volume[angle%360];
+    if (vol > 30)
+      return vol;
+    else
+      return 0;
+  }
+  
+
 }

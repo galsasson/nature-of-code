@@ -14,11 +14,15 @@ class Player
   float lastLaserLength;
   
   float[] frequencies = {130.81, 138.59, 164.81, 174.61, 196, 207.65, 246.94, 261.63, 277.18, 329.63, 349.23, 392, 415.30, 493.88, 523.25}; 
-  int[] orientalPitches = {36, 37, 40, 41, 42, 45, 46, 48};
   int[] orientalScale = {0, 1, 4, 5, 6, 9, 10};
   
-  int[] newPitches = {36, 38, 41, 43, 46, 48, 50, 53, 55, 58, 60};
+  int[] pitches = {36, 38, 41, 43, 46, 48, 50, 53, 55, 58, 60};                    // 6 notes sounds good
+//  int[] pitches = {36, 37, 40, 41, 42, 45, 46, 48, 49, 52, 53, 54, 57, 58, 60};    // oriental pitches
+//  int[] pitches = {36, 38, 40, 41, 43, 45, 47, 48, 50, 52, 53, 55, 57, 59, 60};    // C Major
+//  int[] pitches = {36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48};              // chromatic
+
   
+  Note note;
   NoteRing ring;
   
   float progressFactor;
@@ -47,15 +51,15 @@ class Player
     if (name == "Guitar-Balladeer")
     {
       channel = 0;
-      progressFactor = PI*2/(24*4*2);
+      progressFactor = PI*2/(24*4*4);
       beatsPerNote=12;
       holdTime = 300;
     }
     if (name == "Guitar-Reg")
     {
       channel = 1;
-      progressFactor = PI*2/(24*4*2);
-      beatsPerNote=12;
+      progressFactor = PI*2/(24*4);
+      beatsPerNote=6;
       holdTime = 300;
     }
     if (name == "Pad-Fat")
@@ -73,23 +77,27 @@ class Player
     angle += progressFactor;
     
     if (creature != null)
-      creature.rotation = angle;
+      creature.rotation = angle-PI/2;
     
     /* calculate the intersection between the laser and the shape */
     if (creature!=null)
     {
-      lastLaserLength = getLaserIntersection();
+      try
+      {
+        lastLaserLength = getLaserIntersection();
       
-      if (playCounter % beatsPerNote == playOn) {
+        if (playCounter % beatsPerNote == playOn) {
         
-        if (lastLaserLength != 1)
-        {
-          int noteVal = newPitches[(int)map(lastLaserLength, 0, 1, 0, 10)]+12;
-          Note n = new Note(noteVal + octave*12, 127, channel, holdTime);
-          n.play();
-          ring = new NoteRing(new PVector(0, 90), 40-lastLaserLength*20, 5);
+          if (lastLaserLength != 1)
+          {
+            int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)]+12;
+            note = new Note(noteVal + octave*12, creature.genome.getVolume(angle), channel, holdTime);
+            note.play();
+            ring = new NoteRing(new PVector(0, 95), 40-lastLaserLength*20, 5);
+          }
         }
       }
+      catch (Exception e) {}
     }
     
     playCounter++;
@@ -98,6 +106,7 @@ class Player
   public void setBeat()
   {
     playCounter = 0;
+    angle = 0;
   }
   
   /* calculate the intersection between the laser and the shape, return result between 0-1 */
@@ -110,11 +119,13 @@ class Player
     if (creature != null)
     {  
       yInters.clear();
-      PVector p1 = creature.genome.shape.get(creature.genome.shape.size()-1).get();
+//      PVector p1 = creature.genome.shape.get(creature.genome.shape.size()-1).get();
+      PVector p1 = creature.getPointPos(creature.genome.shape.size()-1);
       p1.rotate(angle);
       for (int i=0; i<creature.genome.shape.size(); i++)
       {
-        PVector p2 = creature.genome.shape.get(i).get();
+//        PVector p2 = creature.genome.shape.get(i).get();
+        PVector p2 = creature.getPointPos(i);
         p2.rotate(angle);
         if (p1.x * p2.x < 0)
         {
@@ -129,7 +140,6 @@ class Player
         p1 = p2;
       }
       
-      println(maxInter);
       maxInter = constrain(maxInter, 5, 35.5);
       return map(maxInter, 5, 35.5, 0, 1);
     }
@@ -148,11 +158,13 @@ class Player
     line(-30, 40, -36, 0);
     line(30, 40, 36, 0);
     
-    rect(-30, 40, 60, 80);
-    ellipse(0, 90, 40, 40);
+    
+    rect(-30, 40, 60, 80, 5);
+    ellipse(0, 55, 20, 20);
+    ellipse(0, 95, 40, 40);
     
     strokeWeight(1);
-    ellipse(0, 90, 40-lastLaserLength*20, 40-lastLaserLength*20);
+    ellipse(0, 95, 40-lastLaserLength*20, 40-lastLaserLength*20);
     
     if (creature != null/* && playCounter % 12 == playOn*/)
     {
@@ -173,11 +185,31 @@ class Player
     popMatrix();
   }
   
+  public void draw2()
+  {
+    pushMatrix();
+    translate(pos.x, pos.y);
+    
+    strokeWeight(2);
+    stroke(0);
+    arc(-50, 0, 180, 180, -PI/7, PI/7, OPEN);
+    line(40, 0, 80, 0);
+    
+    stroke(255, 0, 0);
+    strokeWeight(2);
+    
+    float end = map(lastLaserLength, 0, 1, 5, 35.5);
+    line(40, 0, end, 0);
+    stroke(255, 0, 0, 100);
+    ellipse(end, 0, 5, 5);    
+    
+    popMatrix();
+  }
+  
   public void setCreature(Creature c)
   {
     creature = c;
     creature.set(pos.x, pos.y);
-//    wave.setAmp(0.2);
   }
   
   public Creature getCreature()
@@ -187,7 +219,10 @@ class Player
   
   public void empty()
   {
-//    wave.setAmp(0);
+    if (note != null) {
+      note.stopNote();
+      note = null;
+    }
     ring = null;
     lastLaserLength = 0;
     creature = null;

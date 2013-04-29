@@ -39,7 +39,7 @@ class Note extends Thread
     myBus.sendNoteOn(channel, noteVal, volume);
   }
   
-  private void stopNote()
+  public void stopNote()
   {
     myBus.sendNoteOff(channel, noteVal, volume);
   }
