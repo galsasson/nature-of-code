@@ -20,6 +20,7 @@ int beatCounter;
 boolean systemReady = false;
 PFont font;
 
+
 ColorScheme colorScheme;
 
 void setup()
@@ -31,7 +32,6 @@ void setup()
   frameRate(60);
   
   font = loadFont("ShareTech-Regular-16.vlw");
-  textFont(font, 16);
   
   myBus = new MidiBus(this, 0, 0);
   physics = new VerletPhysics2D();
@@ -42,36 +42,37 @@ void setup()
   morpher = new ShapeMorpher();
   
   colorScheme = new ColorScheme();
-  rawPortal = new RawPortal(new PVector(60, height-100));
+  rawPortal = new RawPortal(new PVector(80, height-110));
   beatCounter = 0;
   
   players = new ArrayList<Player>();
   
-  players.add(new Player(new PVector(width-100, 650), "Pad-Fat", -1));
-  players.add(new Player(new PVector(width-100, 550), "Pad-Fat", 0));
+  players.add(new Player(new PVector(width-300, 650), "Pad-Fat", -1));
+  players.add(new Player(new PVector(width-200, 550), "Pad-Fat", 0));
 
-  players.add(new Player(new PVector(width-100, 450), "Guitar-Balladeer", -1));
-  players.add(new Player(new PVector(width-100, 350), "Guitar-Balladeer", 0));
+  players.add(new Player(new PVector(width-300, 450), "Guitar-Balladeer", -1));
+  players.add(new Player(new PVector(width-200, 350), "Guitar-Balladeer", 0));
   
-  players.add(new Player(new PVector(width-100, 250), "Guitar-Reg", 0));
-  players.add(new Player(new PVector(width-100, 150), "Guitar-Reg", 1));
-  players.add(new Player(new PVector(width-100, 50), "Guitar-Reg-Fast", 1));
+  players.add(new Player(new PVector(width-300, 250), "Guitar-Reg", 0));
+  players.add(new Player(new PVector(width-200, 150), "Guitar-Reg", 1));
+  players.add(new Player(new PVector(width-300, 50), "Guitar-Reg-Fast", 1));
   
   for (int i=0; i<20; i++)
   {
-    Creature c = new Creature(width/2 - 7*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
+    Creature c = new Creature(width/2 - 12*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
     c.initRandom();
     addCreature(c);
   }
-
-//  for (int i=0; i<3; i++)
-//  {  
-//    Creature c = new Creature(50 + i*60, height-80, morpher);
-//    c.initRandom();
-//    c.setToRaw();
-//    addCreature(c);
-//  }
   
+  /* Add the "GOGOAM" logo */
+  String logo = "GOGOAM";
+  for (int i=0; i<logo.length(); i++)
+  {
+    Creature c = new Creature(50+i*40, 50, morpher);
+    c.initAsLetter(logo.charAt(i));
+    addCreature(c);
+  }
+
   systemReady = true;
 }
 
@@ -100,7 +101,7 @@ void draw()
   for (Player p : players)
   {
     //p.update();
-    p.draw2();
+    p.draw();
   }
   
   strokeWeight(3);

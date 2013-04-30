@@ -18,6 +18,9 @@ class Creature extends VerletParticle2D
   boolean isRawType;
   int rawIndex;
   
+  boolean closeShape;
+  boolean isLetter;
+  
   public Creature(float x, float y, ShapeMorpher m)
   {
     super(x, y);
@@ -25,6 +28,7 @@ class Creature extends VerletParticle2D
     age = MAX_AGE;
     rotation = 0;
     isRawType = false;
+    closeShape = true;
     
     genome = new Genome();
     anim = new Animator();
@@ -33,10 +37,35 @@ class Creature extends VerletParticle2D
   public void initRandom()
   {
     genome.initRandom();
+    closeShape = false;
+    isLetter = false;
+  }
+  
+  public void initAsLetter(char ch)
+  {
+    switch(ch)
+    {
+      case 'G':
+        genome.initAsG();
+        break;
+      case 'O':
+        genome.initAsO();
+        break;
+      case 'A':
+        genome.initAsA();
+        break;
+      case 'M':
+        genome.initAsM();
+        break;
+    }
+    
+    closeShape = false;
+    isLetter = true;
   }
   
   public void setToRaw()
   {
+    closeShape = true;
     isRawType = true;
     anim.init(0, 1, 20);
     anim.play();
@@ -44,8 +73,8 @@ class Creature extends VerletParticle2D
   
   public void setToCreature()
   {
-    genome.initRandom();
-    anim.init(1, 0, 10);
+    initRandom();
+    anim.init(1, 0, 20);
     anim.play();
     isRawType = false;
   }
@@ -62,7 +91,10 @@ class Creature extends VerletParticle2D
     g.rotate(rotation);
     
     noFill();
-    stroke(colorScheme.getDark());
+    if (isLetter)
+      stroke(colorScheme.getDark(), 100);
+    else
+      stroke(colorScheme.getDark());
     strokeWeight(2);
     beginShape();
     for (int i=0; i<(int)age; i++)
@@ -72,9 +104,13 @@ class Creature extends VerletParticle2D
       vertex(p.x, p.y);
     }
 
-    PVector shapePoint = morpher.getPoint(0, 1, anim.getNextFrame(), genome.shape);
-    vertex(shapePoint.x + genome.distortion.get(0).get(frameCount%30).x,
-                shapePoint.y + genome.distortion.get(0).get(frameCount%30).y);
+    if (closeShape)
+    {
+      PVector shapePoint = morpher.getPoint(0, 1, anim.getNextFrame(), genome.shape);
+      vertex(shapePoint.x + genome.distortion.get(0).get(frameCount%30).x,
+                  shapePoint.y + genome.distortion.get(0).get(frameCount%30).y);
+    }
+    
     endShape();
 
     popMatrix();

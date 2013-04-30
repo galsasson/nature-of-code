@@ -22,6 +22,72 @@ class Genome
     initDistortion(distortionLevel);
   }
   
+  public void initAsG()
+  {
+    /* init G shape */
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(15-i*5, -25));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(-15, -25+i*5));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(-15+i*5, 25));
+    for (int i=0; i<2; i++)
+      shape.add(new PVector(15, 25-i*5));
+    shape.add(new PVector(15, 5));
+    shape.add(new PVector(0, 5));
+    
+    initDistortion(random(2, 4));
+  }
+  
+  public void initAsO()
+  {
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(15-i*5, -25));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(-15, -25+i*5));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(-15+i*5, 25));
+    for (int i=0; i<3; i++)
+      shape.add(new PVector(15, 25-i*5));    
+    shape.add(new PVector(15, -25));
+    
+    initDistortion(random(2, 4));
+  }
+  
+  public void initAsA()
+  {
+    for (int i=0; i<2; i++)
+      shape.add(new PVector(-15, 25-i*5));
+    for (int i=0; i<2; i++)
+      shape.add(new PVector(-15+i*5, -25));
+    for (int i=0; i<2; i++)
+      shape.add(new PVector(15, -25+i*5));
+    for (int i=0; i<3; i++)
+      shape.add(new PVector(15-i*5, 5));
+    for (int i=0; i<3; i++)
+      shape.add(new PVector(-15+i*5, 5));
+    for (int i=0; i<3; i++)
+      shape.add(new PVector(15, 5+i*5));  
+    shape.add(new PVector(15, 25));
+    
+    initDistortion(random(2, 4));
+  }
+  
+  public void initAsM()
+  {
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(-15, 25-i*5));
+    for (int i=0; i<3; i++)
+      shape.add(new PVector(-15+i*3, -25+i*4));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(0+i*3, -5-i*4));
+    for (int i=0; i<4; i++)
+      shape.add(new PVector(15, -25+i*5));
+    shape.add(new PVector(15, 25));
+    
+    initDistortion(random(2, 4));
+  }
+
   public Genome clone()
   {
     Genome g = new Genome();

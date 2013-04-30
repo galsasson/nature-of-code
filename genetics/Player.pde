@@ -173,49 +173,10 @@ class Player
     translate(pos.x, pos.y);
     
     noFill();
-    stroke(colorScheme.getDark());
-    strokeWeight(1);
-    
-    line(-30, 40, -36, 0);
-    line(30, 40, 36, 0);
-    
-    
-    rect(-30, 40, 60, 80, 5);
-    ellipse(0, 55, 20, 20);
-    ellipse(0, 95, 40, 40);
-    
-    strokeWeight(1);
-    ellipse(0, 95, 40-lastLaserLength*20, 40-lastLaserLength*20);
-    
-    if (creature != null/* && playCounter % 12 == playOn*/)
-    {
-      stroke(255, 0, 0);
-      strokeWeight(1);
-      line(0, 40, 0, map(lastLaserLength, 0, 1, 5, 35.5));
-      
-      /* handle speaker rings */
-      if (ring != null)
-      {
-        if (!ring.update())
-          ring = null;
-        else
-          ring.draw();
-      }
-    }
-    
-    popMatrix();
-  }
-  
-  public void draw2()
-  {
-    pushMatrix();
-    translate(pos.x, pos.y);
-    
-    noFill();
     strokeWeight(2);
     stroke(colorScheme.getDark());
     arc(-50, 0, 180, 180, -PI/7, PI/7, OPEN);
-    line(40, 0, 80, 0);
+    line(40, 0, width-pos.x-20, 0);
     
     stroke(190, 0, 0);
     fill(190, 0, 0);
