@@ -57,11 +57,14 @@ void setup()
   players.add(new Player(new PVector(width-200, 150), "Guitar-Reg", 1));
   players.add(new Player(new PVector(width-300, 50), "Guitar-Reg-Fast", 1));
   
-  for (int i=0; i<20; i++)
+  for (int i=0; i<4; i++)
   {
-    Creature c = new Creature(width/2 - 12*60/2 + (i%10)*60, height-80 - 2*60/2 + (i/10)*60, morpher);
-    c.initRandom();
-    addCreature(c);
+    for (int j=0; j<4; j++)
+    {
+      Creature c = new Creature(150 + i*80, height/2-2*80 + j*80, morpher);
+      c.initRandom();
+      addCreature(c);
+    }
   }
   
   /* Add the "GOGOAM" logo */
@@ -100,7 +103,7 @@ void draw()
   
   for (Player p : players)
   {
-    //p.update();
+    p.update();
     p.draw();
   }
   

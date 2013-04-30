@@ -23,7 +23,8 @@ class Player
 
   
   Note note;
-  NoteRing ring;
+  ArrayList<NoteSymbol> symbols;
+  NoteSymbol symbolToAdd;
   
   float progressFactor;
   int beatsPerNote;
@@ -38,16 +39,15 @@ class Player
     pos = p;
     octave = oct;
 
+    symbols = new ArrayList<NoteSymbol>();
     constantVolume = 0;
-    initPlayer(name);    
-    
     angle = 0;
     creature = null;
-    
-    ring = null;
-    
     playCounter = 0;
     playOn = 0;
+    symbolToAdd = null;
+    
+    initPlayer(name);
   }
   
   private void initPlayer(String name)
@@ -107,14 +107,17 @@ class Player
         
           if (lastLaserLength < 0.99)
           {
-            int vol = constantVolume;
-            int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)]+12;
-            if (vol == 0) {
+            int vol;
+            if (constantVolume == 0)
               vol = creature.genome.getVolume(angle);
-            }
+            else
+              vol = constantVolume;
+              
+            int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)]+12;
             note = new Note(noteVal + octave*12, vol, channel, holdTime);
             note.play();
-            ring = new NoteRing(new PVector(0, 95), 40-lastLaserLength*20, 5);
+            if (vol > 40)
+              symbolToAdd = new NoteSymbol(-15, lastLaserLength*-40+20, vol*2);
           }
         }
       }
@@ -161,10 +164,31 @@ class Player
         p1 = p2;
       }
       
+      println("maxInter = " + maxInter);
+      
       maxInter = constrain(maxInter, 5, 35.5);
       return map(maxInter, 5, 35.5, 0, 1);
     }
     return -1;
+  }
+  
+  public void update()
+  {
+    if (symbolToAdd != null) {
+      symbols.add(symbolToAdd);
+      symbolToAdd = null;
+    }
+    
+    ArrayList<NoteSymbol> toRemove = new ArrayList<NoteSymbol>();
+    
+    for (NoteSymbol sym : symbols)
+    {
+      if (!sym.update())
+        toRemove.add(sym);
+    }
+    
+    for (NoteSymbol sym : toRemove)
+      symbols.remove(sym);
   }
   
   public void draw()
@@ -185,11 +209,29 @@ class Player
     float end = map(lastLaserLength, 0, 1, 5, 35.5);
     line(40, 0, end, 0);
     stroke(190, 0, 0, 100);
-    ellipse(end, 0, 4, 4);
+    ellipse(end, 0, 2, 2);
+    
+    /* draw sparks */
+    stroke(190, 0, 0, 50);
+    pushMatrix();
+    translate(end, 0);
+    for (int i=0; i<10; i++)
+    {
+      rotate(random(PI*2));
+      line(0, 0, 3, 0);
+    }
+    popMatrix();
+    
+    
 
     fill(colorScheme.getDark());
     textFont(font, 16);
     text(displayStr, 42, -2);    
+    
+    for (NoteSymbol sym : symbols)
+    {
+      sym.draw();
+    }
     
     popMatrix();
   }
@@ -211,7 +253,7 @@ class Player
       note.stopNote();
       note = null;
     }
-    ring = null;
+
     lastLaserLength = 0;
     creature = null;
   }
