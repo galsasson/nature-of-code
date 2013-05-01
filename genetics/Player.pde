@@ -16,7 +16,7 @@ class Player
   float[] frequencies = {130.81, 138.59, 164.81, 174.61, 196, 207.65, 246.94, 261.63, 277.18, 329.63, 349.23, 392, 415.30, 493.88, 523.25}; 
   int[] orientalScale = {0, 1, 4, 5, 6, 9, 10};
   
-  int[] pitches = {36, 38, 41, 43, 46, 48, 50, 53, 55, 58, 60};                    // 6 notes sounds good
+  int[] pitches = {48, 50, 53, 55, 58, 60, 62, 65, 67, 70, 72};                    // 6 notes sounds good
 //  int[] pitches = {36, 37, 40, 41, 42, 45, 46, 48, 49, 52, 53, 54, 57, 58, 60};    // oriental pitches
 //  int[] pitches = {36, 38, 40, 41, 43, 45, 47, 48, 50, 52, 53, 55, 57, 59, 60};    // C Major
 //  int[] pitches = {36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48};              // chromatic
@@ -68,6 +68,14 @@ class Player
       holdTime = 300;
       displayStr = "Wee";
     }
+    else if (name == "Guitar-Kon")
+    {
+      channel = 4;
+      progressFactor = PI*2/(24*4);
+      beatsPerNote=6;
+      holdTime = 300;
+      displayStr = "Wee";
+    }
     else if (name == "Guitar-Reg-Fast")
     {
       channel = 1;
@@ -85,7 +93,16 @@ class Player
       holdTime=2600;
       constantVolume = 100;
       displayStr = "Wow";
-    }  
+    }
+    else if (name == "Brass-Soft")
+    {
+      channel = 3;
+      progressFactor = PI*2/(24*4*8);
+      beatsPerNote=192;
+      holdTime=2600;
+      constantVolume = 100;
+      displayStr = "Wow";
+    }    
   }
 
   
@@ -113,11 +130,11 @@ class Player
             else
               vol = constantVolume;
               
-            int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)]+12;
+            int noteVal = pitches[(int)map(lastLaserLength, 0, 1, 0, pitches.length-1)];
             note = new Note(noteVal + octave*12, vol, channel, holdTime);
             note.play();
             if (vol > 40)
-              symbolToAdd = new NoteSymbol(-15, lastLaserLength*-40+20, vol*2);
+              symbolToAdd = new NoteSymbol(-15, lastLaserLength*-40+20, vol*2, colorScheme.getNoteColor(lastLaserLength));
           }
         }
       }
@@ -202,8 +219,8 @@ class Player
     arc(-50, 0, 180, 180, -PI/7, PI/7, OPEN);
     line(40, 0, width-pos.x-20, 0);
     
-    stroke(190, 0, 0);
-    fill(190, 0, 0);
+    stroke(colorScheme.getLaserColor());
+    fill(colorScheme.getLaserColor());
     strokeWeight(1);
     
     float end = map(lastLaserLength, 0, 1, 5, 35.5);
@@ -212,7 +229,7 @@ class Player
     ellipse(end, 0, 2, 2);
     
     /* draw sparks */
-    stroke(190, 0, 0, 50);
+    stroke(colorScheme.getLaserColor(), 50);
     pushMatrix();
     translate(end, 0);
     for (int i=0; i<10; i++)

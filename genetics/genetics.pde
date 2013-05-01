@@ -26,8 +26,7 @@ ColorScheme colorScheme;
 void setup()
 {
   size(1280, 800);
-  background(255);  
-  stroke(0);
+  colorMode(HSB);
   smooth();
   frameRate(60);
   
@@ -47,14 +46,14 @@ void setup()
   
   players = new ArrayList<Player>();
   
-  players.add(new Player(new PVector(width-300, 650), "Pad-Fat", -1));
-  players.add(new Player(new PVector(width-200, 550), "Pad-Fat", 0));
+  players.add(new Player(new PVector(width-300, 650), "Brass-Soft", -1));
+  players.add(new Player(new PVector(width-200, 550), "Pad-Fat", -1));
 
   players.add(new Player(new PVector(width-300, 450), "Guitar-Balladeer", -1));
   players.add(new Player(new PVector(width-200, 350), "Guitar-Balladeer", 0));
   
   players.add(new Player(new PVector(width-300, 250), "Guitar-Reg", 0));
-  players.add(new Player(new PVector(width-200, 150), "Guitar-Reg", 1));
+  players.add(new Player(new PVector(width-200, 150), "Guitar-Kon", 2));
   players.add(new Player(new PVector(width-300, 50), "Guitar-Reg-Fast", 1));
   
   for (int i=0; i<4; i++)

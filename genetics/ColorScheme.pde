@@ -6,7 +6,7 @@ class ColorScheme
   public ColorScheme()
   {
     anim = new Animator();
-    anim.init(30, 225, 1);
+    anim.init(35, 220, 1);
   }
   
   public color getDark()
@@ -17,6 +17,16 @@ class ColorScheme
   public color getLight()
   {
     return color(255 - anim.getNextFrame());
+  }
+  
+  public color getNoteColor(float pitch)
+  {
+    return color(map(pitch, 0, 1, 0, 360), 200, 200);
+  }
+  
+  public color getLaserColor()
+  {
+    return color(0, 190, 190);
   }
   
   public void startFlip(int frames)
