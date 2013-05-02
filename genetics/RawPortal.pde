@@ -22,7 +22,7 @@ class RawPortal
     arc(0, 0, 100, 100, PI/2-1, PI/2+1);
     
     fill(colorScheme.getDark());
-    text("Raw", -12, 6);
+    text("recycle", -20, 3);
     
     popMatrix();
   }

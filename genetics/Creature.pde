@@ -125,7 +125,7 @@ class Creature extends VerletParticle2D
   
   public boolean pick(Vec2D p)
   {
-    if (distanceTo(p) < SIZE-10) {
+    if (distanceTo(p) < SIZE-25) {
       return true;
     }
     

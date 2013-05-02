@@ -1,22 +1,30 @@
 
 class ColorScheme
 {
-  Animator anim;
+  Animator animH;
+  Animator animS;
+  Animator animB;
   
   public ColorScheme()
   {
-    anim = new Animator();
-    anim.init(35, 220, 1);
+    animH = new Animator(0, 0, 1);
+    animS = new Animator(0, 0, 1);
+    animB = new Animator(220, 220, 1);
   }
   
   public color getDark()
   {
-    return color(anim.getNextFrame());
+    return color(35);
   }
   
   public color getLight()
   {
-    return color(255 - anim.getNextFrame());
+    return color(220);
+  }
+  
+  public color getBackground()
+  {
+    return color(animH.getNextFrame(), animS.getNextFrame(), animB.getNextFrame());
   }
   
   public color getNoteColor(float pitch)
@@ -26,21 +34,23 @@ class ColorScheme
   
   public color getLaserColor()
   {
-    return color(0, 190, 190);
+    return color(0, 190, 150);
   }
   
-  public void startFlip(int frames)
+  public void startFlip(color target, int frames)
   {
-    if (red(getDark()) == 0)
-      anim.init(0, 255, frames);
-    else
-      anim.init(255, 0, frames);
-      
-    anim.play();
+    animH.init(animH.getNextFrame(), hue(target), frames);
+    animS.init(animS.getNextFrame(), saturation(target), frames);
+    animB.init(animB.getNextFrame(), brightness(target), frames);
+    animH.play();
+    animS.play();
+    animB.play();
   }
   
   public void update()
   {
-    anim.update();
+    animH.update();
+    animS.update();
+    animB.update();
   }
 }

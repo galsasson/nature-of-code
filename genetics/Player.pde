@@ -17,6 +17,7 @@ class Player
   int[] orientalScale = {0, 1, 4, 5, 6, 9, 10};
   
   int[] pitches = {48, 50, 53, 55, 58, 60, 62, 65, 67, 70, 72};                    // 6 notes sounds good
+//  int[] pitches = {52, 55, 57, 59, 60, 62, 64, 67, 69, 71, 72, 74, 76};                    // Massive Attach - Teardrop
 //  int[] pitches = {36, 37, 40, 41, 42, 45, 46, 48, 49, 52, 53, 54, 57, 58, 60};    // oriental pitches
 //  int[] pitches = {36, 38, 40, 41, 43, 45, 47, 48, 50, 52, 53, 55, 57, 59, 60};    // C Major
 //  int[] pitches = {36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48};              // chromatic
@@ -160,12 +161,10 @@ class Player
     if (creature != null)
     {  
       yInters.clear();
-//      PVector p1 = creature.genome.shape.get(creature.genome.shape.size()-1).get();
-      PVector p1 = creature.getPointPos(creature.genome.shape.size()-1);
+      PVector p1 = creature.getPointPos(0);
       p1.rotate(angle);
-      for (int i=0; i<creature.genome.shape.size(); i++)
+      for (int i=1; i<creature.genome.shape.size(); i++)
       {
-//        PVector p2 = creature.genome.shape.get(i).get();
         PVector p2 = creature.getPointPos(i);
         p2.rotate(angle);
         if (p1.x * p2.x < 0)
@@ -177,11 +176,8 @@ class Player
             maxInter = intersection;
           }
         }
-        
         p1 = p2;
       }
-      
-      println("maxInter = " + maxInter);
       
       maxInter = constrain(maxInter, 5, 35.5);
       return map(maxInter, 5, 35.5, 0, 1);
@@ -221,7 +217,7 @@ class Player
     
     stroke(colorScheme.getLaserColor());
     fill(colorScheme.getLaserColor());
-    strokeWeight(1);
+    strokeWeight(2);
     
     float end = map(lastLaserLength, 0, 1, 5, 35.5);
     line(40, 0, end, 0);

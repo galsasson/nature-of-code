@@ -17,6 +17,9 @@ RawPortal rawPortal;
 ShapeMorpher morpher;
 
 int beatCounter;
+int colorFlipCounter;
+int beatsPerColorFlip;
+
 boolean systemReady = false;
 PFont font;
 
@@ -41,7 +44,7 @@ void setup()
   morpher = new ShapeMorpher();
   
   colorScheme = new ColorScheme();
-  rawPortal = new RawPortal(new PVector(80, height-110));
+  rawPortal = new RawPortal(new PVector(80, height-130));
   beatCounter = 0;
   
   players = new ArrayList<Player>();
@@ -70,7 +73,7 @@ void setup()
   String logo = "GOGOAM";
   for (int i=0; i<logo.length(); i++)
   {
-    Creature c = new Creature(50+i*40, 50, morpher);
+    Creature c = new Creature(50+i*32, 50, morpher);
     c.initAsLetter(logo.charAt(i));
     addCreature(c);
   }
@@ -89,9 +92,9 @@ void addCreature(Creature c)
 
 void draw()
 {
-  background(colorScheme.getLight());
+  background(colorScheme.getBackground());
   
-  physics.update();
+//  physics.update();
   colorScheme.update();
 
   for (Creature c : creatures)
@@ -120,7 +123,6 @@ void mousePressed()
   {
     if (c.pick(new Vec2D(mouseX, mouseY)))
     {
-      //c.animateToCircle();
       mouseCreature = c;
       c.lock();     
       c.set(mouseX, mouseY);
@@ -177,9 +179,6 @@ void mouseReleased()
     {
 //      mouseCreature.lock();
       p.setCreature(mouseCreature);
-      
-      // transition from white to black
-//      doTransitions();
     }
   }
   
@@ -203,14 +202,30 @@ void rawMidi(byte[] data) {
       p.setBeat();
     }
     beatCounter = 0;
+    colorFlipCounter = 0;
+    beatsPerColorFlip = 24*2;
   }
   
    /* clock message */
   if (data[0] == (byte)0xf8) {
     beatCounter++;
+    colorFlipCounter++;
     if (beatCounter==24*4) {
       beatCounter = 0;
     }
+    
+    /* tell players to emit sound */
+    for (Player p : players)
+    {
+      p.beat();
+    }
+
+    /* change background color */
+//    if (colorFlipCounter == beatsPerColorFlip)
+//    {
+//      colorScheme.startFlip(color(random(360), 80, 255), 1);
+//      colorFlipCounter = 0;
+//    }
     
     /* beat animation */
     if (beatCounter == 24*4-20)
@@ -220,7 +235,7 @@ void rawMidi(byte[] data) {
         c.animateToCircle(0.3, 20);
       }
     }
-    else if (beatCounter == 24*4-1)
+    else if (beatCounter == 24*4-2)
     {
       for (Creature c : creatures)
       {
@@ -243,13 +258,7 @@ void rawMidi(byte[] data) {
         c.animateToOrig(0.2, 4);
       }
     }
-
     
-    for (Player p : players)
-    {
-      p.beat();
-    }
-
   }
 }
 
@@ -262,8 +271,8 @@ public void doTransitions()
       activePlayers++;
   }
   
-  if (activePlayers >= 5)
-    colorScheme.startFlip(20);
+//  if (activePlayers >= 5)
+//    colorScheme.startFlip(20);
 }
 
 /*
