@@ -7,14 +7,14 @@ import toxi.geom.*;
 MidiBus myBus;
 VerletPhysics2D physics;
 
+Background[] back;
+
 ArrayList<Creature> creatures;
 Creature mouseCreature = null;
 
 ArrayList<Player> players;
 
 RawPortal rawPortal;
-
-ShapeMorpher morpher;
 
 int beatCounter;
 int colorFlipCounter;
@@ -23,6 +23,7 @@ int beatsPerColorFlip;
 boolean systemReady = false;
 PFont font;
 
+//Dancer dancer;
 
 ColorScheme colorScheme;
 
@@ -40,30 +41,32 @@ void setup()
   
   physics.setWorldBounds(new Rect(0,0,width,height));
 
-  creatures = new ArrayList<Creature>();
-  morpher = new ShapeMorpher();
+  back = new Background[3];
+  back[0] = new Background(1000, 1, 3);
+  back[1] = new Background(10, 15, 18);
+  back[2] = new Background(3, 30, 40);
   
   colorScheme = new ColorScheme();
   rawPortal = new RawPortal(new PVector(80, height-130));
   beatCounter = 0;
   
+  // setup player on a circle outline
   players = new ArrayList<Player>();
   
-  players.add(new Player(new PVector(width-300, 650), "Brass-Soft", -1));
-  players.add(new Player(new PVector(width-200, 550), "Pad-Fat", -1));
-
-  players.add(new Player(new PVector(width-300, 450), "Guitar-Balladeer", -1));
-  players.add(new Player(new PVector(width-200, 350), "Guitar-Balladeer", 0));
+  players.add(new Player(width-200, height-120, "Brass-Soft", -1));
+  players.add(new Player(width-200, height-220, "Pad-Fat", -1));
+  players.add(new Player(width-200, height-320, "Guitar-Balladeer", -1));
+  players.add(new Player(width-200, height-420, "Guitar-Balladeer", 0));
+  players.add(new Player(width-200, height-520, "Guitar-Kon", 2));
+  players.add(new Player(width-200, height-620, "Guitar-Reg", 0));
+  players.add(new Player(width-200, height-720, "Guitar-Reg-Fast", 1));
   
-  players.add(new Player(new PVector(width-300, 250), "Guitar-Reg", 0));
-  players.add(new Player(new PVector(width-200, 150), "Guitar-Kon", 2));
-  players.add(new Player(new PVector(width-300, 50), "Guitar-Reg-Fast", 1));
-  
+  creatures = new ArrayList<Creature>();
   for (int i=0; i<4; i++)
   {
     for (int j=0; j<4; j++)
     {
-      Creature c = new Creature(150 + i*80, height/2-2*80 + j*80, morpher);
+      Creature c = new Creature(150 + i*80, height/2-2*80 + j*80);
       c.initRandom();
       addCreature(c);
     }
@@ -73,7 +76,7 @@ void setup()
   String logo = "GOGOAM";
   for (int i=0; i<logo.length(); i++)
   {
-    Creature c = new Creature(50+i*32, 50, morpher);
+    Creature c = new Creature(50+i*32, 50);
     c.initAsLetter(logo.charAt(i));
     addCreature(c);
   }
@@ -92,10 +95,18 @@ void addCreature(Creature c)
 
 void draw()
 {
+  int totalNotes = 0;
+
   background(colorScheme.getBackground());
   
+  for (Background b : back)
+  {
+    b.update();
+    b.draw();
+  }
+  
 //  physics.update();
-  colorScheme.update();
+//  colorScheme.update();
 
   for (Creature c : creatures)
   {
@@ -107,14 +118,15 @@ void draw()
   {
     p.update();
     p.draw();
+    totalNotes += p.getNumOfNotes();
   }
   
-  strokeWeight(3);
-  stroke(colorScheme.getDark());
-  line(width-20, 50, width-20, height-50);
-  line(width-20, height-50, 0, height-50);
-  
   rawPortal.draw();
+  
+  // update the force of the background
+  back[0].setSpeed((float)totalNotes/600);
+  back[1].setSpeed((float)totalNotes/300);
+  back[2].setSpeed((float)totalNotes/200);
 }
 
 void mousePressed()
@@ -160,7 +172,8 @@ void mouseReleased()
     
   //mouseCreature.animateToOrig();
   //mouseCreature.unlock();
-  
+/*  
+  // mate two creatures
   for (int i=0; i<creatures.size(); i++)
   {
     if (creatures.get(i) != mouseCreature && creatures.get(i).pick(new Vec2D(mouseX, mouseY)))
@@ -172,7 +185,7 @@ void mouseReleased()
       addCreature(newc);
     }
   }
-  
+*/
   for (Player p : players)
   {
     if (p.pick(new PVector(mouseX, mouseY)))
@@ -190,6 +203,7 @@ void mouseReleased()
   
   mouseCreature = null;
 }
+
 
 void rawMidi(byte[] data) {
   if (!systemReady)
@@ -220,26 +234,19 @@ void rawMidi(byte[] data) {
       p.beat();
     }
 
-    /* change background color */
-//    if (colorFlipCounter == beatsPerColorFlip)
-//    {
-//      colorScheme.startFlip(color(random(360), 80, 255), 1);
-//      colorFlipCounter = 0;
-//    }
-    
     /* beat animation */
     if (beatCounter == 24*4-20)
     {
       for (Creature c : creatures)
       {
-        c.animateToCircle(0.3, 20);
+        c.animateToBeat(0.3, 20);
       }
     }
     else if (beatCounter == 24*4-2)
     {
       for (Creature c : creatures)
       {
-        c.animateToOrig(0.3, 4);
+        c.animateFromBeat(0.3, 4);
       }
     }
     
@@ -248,14 +255,14 @@ void rawMidi(byte[] data) {
     {
       for (Creature c : creatures)
       {
-        c.animateToCircle(0.2, 20);
+        c.animateToBeat(0.2, 20);
       }
     }
     else if (beatCounter == 24*2-3)
     {
       for (Creature c : creatures)
       {
-        c.animateToOrig(0.2, 4);
+        c.animateFromBeat(0.2, 4);
       }
     }
     
@@ -271,37 +278,5 @@ public void doTransitions()
       activePlayers++;
   }
   
-//  if (activePlayers >= 5)
-//    colorScheme.startFlip(20);
 }
-
-/*
-void nextGen()
-{
-  ArrayList<Creature> selectedOnes = new ArrayList<Creature>();
-  float averageFit = 0;
-  for (Creature c : creatures)
-  {
-    averageFit += c.getFitness();
-  }
-  averageFit /= creatures.size();
-  
-  for (Creature c :creatures)
-  {
-    if (c.getFitness() < averageFit)
-      selectedOnes.add(c);
-  }
-  
-  
-  ArrayList<Creature> newGen = new ArrayList<Creature>();
-  for (int i=0 ;i<500; i++)
-  {
-    Creature newC = selectedOnes.get(int(random(selectedOnes.size()))).mate(selectedOnes.get(int(random(selectedOnes.size()))));
-    newC.pos = new PVector(40 + newGen.size()%18*60, 40 + newGen.size()/18*60);
-    newGen.add(newC);
-  }
-  
-  creatures = newGen;
-}
-*/
 

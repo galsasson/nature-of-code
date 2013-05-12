@@ -6,6 +6,7 @@ class NoteSymbol
   color col;
   
   float alpha;
+  float minSpeed;
   
   public NoteSymbol(float x, float y, float a, color c)
   {
@@ -13,14 +14,26 @@ class NoteSymbol
     speed = new PVector(-7, 0);
     alpha = a;
     col = c;
+    
+    minSpeed = -3; 
+  }
+  
+  public void setDirection(float x, float y)
+  {
+    PVector direction = new PVector(x, y);
+    direction.normalize();
+    direction.mult(7);
+    speed = direction;
   }
   
   public boolean update()
   {
     pos.add(speed);
     
-    speed.mult(0.98);
-    alpha-=3.5;
+    if (speed.x < minSpeed)
+      speed.mult(0.98);
+      
+    alpha-=0.8;
     
     if (alpha<0)
       return false;

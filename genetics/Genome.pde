@@ -268,8 +268,6 @@ class Genome
   public int getVolume(float ang)
   {
     int angle = (int)degrees(ang);
-//    if (angle < 0 || angle > 359)
-//      println("angle = " + angle);
     int vol = volume[angle%360];
     if (vol > 30)
       return vol;

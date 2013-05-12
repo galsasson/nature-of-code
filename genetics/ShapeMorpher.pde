@@ -3,15 +3,43 @@ class ShapeMorpher
 {
   public ArrayList<PVector> circle;
   public ArrayList<PVector> point;
+  public ArrayList<PVector> male;
   
+  Animator anim;
+  ArrayList<PVector> fromShape;
+  ArrayList<PVector> toShape;
   
   public ShapeMorpher()
   {
     initCircle();
     initPoint();
+    initMale();
+    
+    anim = new Animator();
+    fromShape = null;
+    toShape = null;
   }
   
-  private void initCircle()
+  public void initMorph(ArrayList<PVector> s1, ArrayList<PVector> s2, float start, float end, int frames)
+  {
+    this.fromShape = s1;
+    this.toShape = s2;
+    anim.init(start, end, frames);
+    anim.play();
+  }
+  
+  public PVector getPoint(int index)
+  {
+    PVector diff = PVector.sub(toShape.get(index), fromShape.get(index));
+    return PVector.add(fromShape.get(index), PVector.mult(diff, anim.getNextFrame()));
+  }
+  
+  public void update()
+  {
+    anim.update();
+  }
+  
+    private void initCircle()
   {    
     circle = new ArrayList<PVector>();
     
@@ -33,24 +61,25 @@ class ShapeMorpher
       point.add(new PVector(0, 0));
   }
   
-  public PVector getPoint(int index, int type, float amount, ArrayList<PVector> shape)
+  private void initMale()
   {
-    amount = constrain(amount, 0, 1);
+    male = new ArrayList<PVector>();
     
-    /* morph into a point */
-    if (type == 0)
-    {
-      PVector diff = PVector.sub(point.get(index), shape.get(index));
-      return PVector.add(shape.get(index), PVector.mult(diff, amount));
-    }
-    /* morph into a circle */
-    else if (type == 1)
-    {
-      PVector diff = PVector.sub(circle.get(index), shape.get(index));
-      return PVector.add(shape.get(index), PVector.mult(diff, amount));
-    }
-    
-    return shape.get(index);
+    male.add(new PVector(-15,-15));
+    male.add(new PVector(-5,-15));
+    male.add(new PVector(5,-15));
+    male.add(new PVector(15,-15));
+    male.add(new PVector(15,-5));
+    male.add(new PVector(15,5));
+    male.add(new PVector(15,15));
+    male.add(new PVector(0,15));
+    male.add(new PVector(-15,15));
+    male.add(new PVector(-15,5));
+    male.add(new PVector(-5,5));
+    male.add(new PVector(5,5));
+    male.add(new PVector(5,-5));
+    male.add(new PVector(-5,-5));
+    male.add(new PVector(-15,-5));
+    male.add(new PVector(-15,-15));
   }
-  
 }

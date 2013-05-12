@@ -35,9 +35,9 @@ class Player
   String displayStr;
 
     
-  public Player(PVector p, String name, int oct)
+  public Player(float x, float y, String name, int oct)
   {
-    pos = p;
+    pos = new PVector(x, y);
     octave = oct;
 
     symbols = new ArrayList<NoteSymbol>();
@@ -64,7 +64,7 @@ class Player
     else if (name == "Guitar-Reg")
     {
       channel = 1;
-      progressFactor = PI*2/(24*4);
+      progressFactor = PI*2/(24*2);
       beatsPerNote=6;
       holdTime = 300;
       displayStr = "Wee";
@@ -72,7 +72,7 @@ class Player
     else if (name == "Guitar-Kon")
     {
       channel = 4;
-      progressFactor = PI*2/(24*4);
+      progressFactor = PI*2/(24*8);
       beatsPerNote=6;
       holdTime = 300;
       displayStr = "Wee";
@@ -135,7 +135,8 @@ class Player
             note = new Note(noteVal + octave*12, vol, channel, holdTime);
             note.play();
             if (vol > 40)
-              symbolToAdd = new NoteSymbol(-15, lastLaserLength*-40+20, vol*2, colorScheme.getNoteColor(lastLaserLength));
+              symbolToAdd = new NoteSymbol(map(lastLaserLength, 0, 1, 5, 35.5), 0/*lastLaserLength*-40+20*/, vol*2, colorScheme.getNoteColor(lastLaserLength));
+              symbolToAdd.setDirection(-8, -lastLaserLength+0.3);
           }
         }
       }
@@ -209,16 +210,17 @@ class Player
     pushMatrix();
     translate(pos.x, pos.y);
     
+    // Draw player shape
     noFill();
     strokeWeight(2);
     stroke(colorScheme.getDark());
-    arc(-50, 0, 180, 180, -PI/7, PI/7, OPEN);
-    line(40, 0, width-pos.x-20, 0);
+    arc(0, 0, 80, 80, PI+0.5, PI*2);
+    arc(0, 0, 80, 80, 0, PI-0.5);
     
+    // draw laser
     stroke(colorScheme.getLaserColor());
     fill(colorScheme.getLaserColor());
     strokeWeight(2);
-    
     float end = map(lastLaserLength, 0, 1, 5, 35.5);
     line(40, 0, end, 0);
     stroke(190, 0, 0, 100);
@@ -235,11 +237,12 @@ class Player
     }
     popMatrix();
     
-    
 
+    /*
     fill(colorScheme.getDark());
     textFont(font, 16);
     text(displayStr, 42, -2);    
+    */
     
     for (NoteSymbol sym : symbols)
     {
@@ -277,5 +280,10 @@ class Player
       return true;
       
     return false;
+  }
+  
+  public int getNumOfNotes()
+  {
+    return symbols.size();
   }
 }
